@@ -23,7 +23,7 @@ export default function Login() {
 
         <Button
             title="Login"
-            onPress={() => router.push('/safety-plan')}
+            onPress={() => router.push('/(safety-tabs)/safety-plan')}
         />
     </ThemedView>
   );
