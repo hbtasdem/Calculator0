@@ -1,98 +1,119 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import { StyleSheet, View, Text, Pressable } from 'react-native';
 import { Link } from 'expo-router';
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const buttons = [
+    ['C', '±', '%', '÷'],
+    ['7', '8', '9', '×'],
+    ['4', '5', '6', '−'],
+    ['1', '2', '3', '+'],
+    [' ', '0', '.', '='],
+  ];
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  return (
+    <View style={styles.container}>
+      {/* Display */}
+      <View style={styles.display}>
+        <Text style={styles.displayText}>0</Text>
+      </View>
+
+      {/* Buttons */}
+      <View style={styles.buttonContainer}>
+        {buttons.map((row, rowIndex) => (
+          <View key={rowIndex} style={styles.row}>
+            {row.map((button) => {
+              // Special case for "0" button - make it link to login
+              if (button === '0') {
+                return (
+                  <Link key={button} href="/login" asChild>
+                    <Pressable style={styles.button}>
+                      <Text style={styles.buttonText}>{button}</Text>
+                    </Pressable>
+                  </Link>
+                );
+              }
+              // Regular buttons
+              const isOperator = ['÷', '×', '−', '+', '='].includes(button);
+              const isTopRow = ['C', '±', '%'].includes(button);
+
+              return (
+                <Pressable
+                  key={button}
+                  style={[
+                    styles.button,
+                    isOperator && styles.operatorButton,
+                    isTopRow && styles.topRowButton,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.buttonText,
+                      isOperator && styles.operatorText,
+                    ]}
+                  >
+                    {button}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        ))}
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+    justifyContent: 'flex-end',
+  },
+  display: {
+    padding: 20,
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    minHeight: 120,
+  },
+  displayText: {
+    color: '#fff',
+    fontSize: 64,
+    fontWeight: '300',
+  },
+  buttonContainer: {
+    padding: 10,
+  },
+  row: {
     flexDirection: 'row',
+    marginBottom: 10,
+  },
+  button: {
+    flex: 1,
+    aspectRatio: 1,
+    backgroundColor: '#333',
+    borderRadius: 50,
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
+    marginHorizontal: 5,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  zeroButton: {
+    flex: 2,
+    aspectRatio: 2.2,
+    backgroundColor: '#333',
+    borderRadius: 50,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  operatorButton: {
+    backgroundColor: '#ff9500',
+  },
+  topRowButton: {
+    backgroundColor: '#a5a5a5',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 32,
+    fontWeight: '400',
+  },
+  operatorText: {
+    fontWeight: '500',
   },
 });
