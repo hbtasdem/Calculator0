@@ -1,52 +1,350 @@
-import { View, TextInput, Button, StyleSheet } from 'react-native';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { useState } from 'react';
 import { router } from 'expo-router';
+import { authService } from '@/services/authService';
+import { LinearGradient } from 'expo-linear-gradient';
 
-export default function Login() {
+export default function LoginScreen() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [customerId, setCustomerId] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleSignUp = async () => {
+    if (!email || !password || !customerId) {
+      Alert.alert('Error', 'Please fill all fields');
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters');
+      return;
+    }
+
+    setLoading(true);
+    const result = await authService.signUp(email, password, customerId);
+    setLoading(false);
+
+    if (result.success) {
+      const hasBiometrics = await authService.isBiometricsAvailable();
+      if (hasBiometrics) {
+        Alert.alert(
+          'Welcome to 0',
+          'Use Face ID to unlock the app next time?',
+          [
+            { text: 'Not now', onPress: () => router.replace('/(tabs)') },
+            { text: 'Enable', onPress: async () => {
+              await authService.setBiometricsEnabled(true);
+              router.replace('/(tabs)');
+            } },
+          ]
+        );
+      } else {
+        Alert.alert('Success', 'Account created! Welcome to 0.', [
+          { text: 'OK', onPress: () => router.replace('/(tabs)') }
+        ]);
+      }
+    } else {
+      Alert.alert('Signup Failed', result.error || 'Could not create account');
+    }
+  };
+
+  const handleSignIn = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please enter email and password');
+      return;
+    }
+
+    setLoading(true);
+    const result = await authService.signIn(email, password);
+    setLoading(false);
+
+    if (result.success) {
+      if (result.isDecoy) {
+        Alert.alert('Decoy Mode', 'Showing safe fake data');
+      }
+      const hasBiometrics = await authService.isBiometricsAvailable();
+      if (hasBiometrics) {
+        Alert.alert(
+          'Quick access',
+          'Use Face ID to unlock the app next time?',
+          [
+            { text: 'Not now', onPress: () => router.replace('/(tabs)') },
+            { text: 'Enable', onPress: async () => {
+              await authService.setBiometricsEnabled(true);
+              router.replace('/(tabs)');
+            } },
+          ]
+        );
+      } else {
+        router.replace('/(tabs)');
+      }
+    } else {
+      Alert.alert('Login Failed', result.error || 'Could not sign in');
+    }
+  };
+
   return (
-    <ThemedView style={styles.container}>
-        <ThemedText type="title" style={styles.title}>Login</ThemedText>
+    <View style={styles.container}>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}
+      >
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={styles.logoContainer}>
+              <View style={styles.logo}>
+                <Text style={styles.logoText}>0</Text>
+              </View>
+            </View>
+            <Text style={styles.title}> Welcome to 0</Text>
+            <Text style={styles.subtitle}>Your financial safety, encrypted</Text>
+          </View>
 
-        <TextInput
-            style={styles.input}
-            placeholder="Username"
-            placeholderTextColor="#888"
-        />
+          {/* Form */}
+          <View style={styles.form}>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your email"
+                placeholderTextColor="#94a3b8"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                editable={!loading}
+              />
+            </View>
 
-        <TextInput
-            style={styles.input}
-            placeholder="Password"
-            secureTextEntry
-            placeholderTextColor="#888"
-        />
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Password</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="At least 6 characters"
+                placeholderTextColor="#94a3b8"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                editable={!loading}
+              />
+            </View>
 
-        <Button
-            title="Login"
-            onPress={() => router.push('/safety-plan')}
-        />
-    </ThemedView>
+            {isSignUp && (
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Customer ID</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Nessie Customer ID"
+                  placeholderTextColor="#94a3b8"
+                  value={customerId}
+                  onChangeText={setCustomerId}
+                  editable={!loading}
+                />
+              </View>
+            )}
+
+            <TouchableOpacity
+              style={[styles.button, loading && styles.buttonDisabled]}
+              onPress={isSignUp ? handleSignUp : handleSignIn}
+              disabled={loading}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.buttonText}>
+                {loading ? 'Processing...' : (isSignUp ? 'Create Account' : 'Sign In')}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.switchButton}
+              onPress={() => setIsSignUp(!isSignUp)}
+              disabled={loading}
+              activeOpacity={0.6}
+            >
+              <Text style={styles.switchText}>
+                {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
+                <Text style={styles.switchTextBold}>
+                  {isSignUp ? 'Sign In' : 'Sign Up'}
+                </Text>
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Info Cards */}
+          <View style={styles.infoSection}>
+            {isSignUp && (
+              <View style={styles.infoCard}>
+                <View style={styles.infoIconContainer}>
+                  <Text style={styles.infoIcon}>ℹ️</Text>
+                </View>
+                <View style={styles.infoContent}>
+                  <Text style={styles.infoTitle}>Need a Customer ID?</Text>
+                  <Text style={styles.infoText}>Run POST /api/demo/setup to create demo customers</Text>
+                </View>
+              </View>
+            )}
+
+            <View style={styles.infoCard}>
+              <View style={styles.infoIconContainer}>
+                <Text style={styles.infoIcon}>🛡️</Text>
+              </View>
+              <View style={styles.infoContent}>
+                <Text style={styles.infoTitle}>Emergency Mode</Text>
+                <Text style={styles.infoText}>Enter PIN 0000 to show safe decoy data</Text>
+              </View>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#0f172a',
+  },
+  keyboardView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: 24,
+    paddingTop: 60,
+    paddingBottom: 40,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 48,
+  },
+  logoContainer: {
+    marginBottom: 20,
+  },
+  logo: {
+    width: 80,
+    height: 80,
+    borderRadius: 20,
+    backgroundColor: '#3b82f6',
     justifyContent: 'center',
-    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#3b82f6',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  logoText: {
+    fontSize: 42,
+    fontWeight: '700',
+    color: '#fff',
   },
   title: {
-    marginBottom: 30,
+    fontSize: 36,
+    fontWeight: '700',
+    color: '#fff',
+    marginBottom: 8,
+    letterSpacing: 1,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#94a3b8',
     textAlign: 'center',
   },
+  form: {
+    marginBottom: 32,
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#e2e8f0',
+    marginBottom: 8,
+    marginLeft: 4,
+  },
   input: {
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    marginBottom: 15,
+    height: 56,
+    backgroundColor: '#1e293b',
+    borderRadius: 12,
+    paddingHorizontal: 16,
     fontSize: 16,
-    backgroundColor: '#fff',
+    color: '#fff',
+    borderWidth: 1,
+    borderColor: '#334155',
+  },
+  button: {
+    height: 56,
+    backgroundColor: '#3b82f6',
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 8,
+    shadowColor: '#3b82f6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  buttonDisabled: {
+    backgroundColor: '#475569',
+    shadowOpacity: 0,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  switchButton: {
+    marginTop: 24,
+    padding: 12,
+    alignItems: 'center',
+  },
+  switchText: {
+    color: '#94a3b8',
+    fontSize: 15,
+  },
+  switchTextBold: {
+    color: '#3b82f6',
+    fontWeight: '600',
+  },
+  infoSection: {
+    gap: 12,
+  },
+  infoCard: {
+    flexDirection: 'row',
+    backgroundColor: '#1e293b',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#334155',
+  },
+  infoIconContainer: {
+    marginRight: 12,
+  },
+  infoIcon: {
+    fontSize: 24,
+  },
+  infoContent: {
+    flex: 1,
+  },
+  infoTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#e2e8f0',
+    marginBottom: 4,
+  },
+  infoText: {
+    fontSize: 13,
+    color: '#94a3b8',
+    lineHeight: 18,
   },
 });
