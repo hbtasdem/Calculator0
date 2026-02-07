@@ -1,15 +1,19 @@
 import { View, Text, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { router } from 'expo-router';
 import { authService } from '@/services/authService';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import Constants from 'expo-constants';
 
 const biometricLabel = Platform.OS === 'ios' ? 'Face ID' : 'fingerprint';
+const isExpoGo = Constants.appOwnership === 'expo';
 
 export default function BiometricGateScreen() {
   const [loading, setLoading] = useState(false);
+  const hasTriggered = useRef(false);
 
-  const handleUnlock = async () => {
+  const runBiometricPrompt = async () => {
+    if (loading) return;
     setLoading(true);
     try {
       const success = await authService.authenticateWithBiometrics(
@@ -25,9 +29,16 @@ export default function BiometricGateScreen() {
     }
   };
 
-  const handleUsePassword = () => {
-    router.replace('/login');
-  };
+  // Auto-show Face ID prompt when screen appears (so user doesn't have to tap)
+  useEffect(() => {
+    if (hasTriggered.current) return;
+    hasTriggered.current = true;
+    const t = setTimeout(runBiometricPrompt, 400);
+    return () => clearTimeout(t);
+  }, []);
+
+  const handleUnlock = () => runBiometricPrompt();
+  const handleUsePassword = () => router.replace('/login');
 
   return (
     <View style={styles.container}>
@@ -38,6 +49,11 @@ export default function BiometricGateScreen() {
       <Text style={styles.subtitle}>
         Use {biometricLabel} to open the app
       </Text>
+      {isExpoGo && (
+        <Text style={styles.expoGoHint}>
+          Face ID does not work in Expo Go. Use a development build (npx expo run:ios) to test it.
+        </Text>
+      )}
 
       <TouchableOpacity
         style={[styles.primaryButton, loading && styles.buttonDisabled]}
@@ -109,5 +125,12 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     opacity: 0.6,
+  },
+  expoGoHint: {
+    fontSize: 12,
+    color: '#64748b',
+    textAlign: 'center',
+    marginBottom: 20,
+    paddingHorizontal: 24,
   },
 });

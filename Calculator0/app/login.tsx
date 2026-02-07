@@ -28,7 +28,8 @@ export default function LoginScreen() {
     setLoading(false);
 
     if (result.success) {
-      const hasBiometrics = await authService.isBiometricsAvailable();
+      // In __DEV__, always show the option so you can test the gate (e.g. see Expo Go hint)
+      const hasBiometrics = (await authService.isBiometricsAvailable()) || __DEV__;
       if (hasBiometrics) {
         Alert.alert(
           'Welcome to 0',
@@ -65,7 +66,7 @@ export default function LoginScreen() {
       if (result.isDecoy) {
         Alert.alert('Decoy Mode', 'Showing safe fake data');
       }
-      const hasBiometrics = await authService.isBiometricsAvailable();
+      const hasBiometrics = (await authService.isBiometricsAvailable()) || __DEV__;
       if (hasBiometrics) {
         Alert.alert(
           'Quick access',

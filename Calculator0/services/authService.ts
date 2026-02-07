@@ -1,8 +1,7 @@
 import { auth } from '@/config/firebase';
+import { API_BASE } from '@/config/api';
 import * as SecureStore from 'expo-secure-store';
 import * as LocalAuthentication from 'expo-local-authentication';
-
-const API_BASE = 'http://localhost:5000/api';
 const BIOMETRICS_ENABLED_KEY = 'biometrics_enabled';
 
 export const authService = {

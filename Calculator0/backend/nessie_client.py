@@ -140,8 +140,8 @@ def create_demo_customers():
     
     # Scenario 3: Normal
     customer3 = NessieClient.create_customer(
-        first_name="Emily",
-        last_name="Chen",
+        first_name="Jane",
+        last_name="Purdue",
         street_number="789",
         street_name="Pine Rd",
         city="Chicago",
@@ -150,7 +150,7 @@ def create_demo_customers():
     )
     
     return {
-        'high_abuse': customer1,
+        'high_abuse': customer3,
         'medium_abuse': customer2,
-        'normal': customer3
+        'normal': customer1
     }
