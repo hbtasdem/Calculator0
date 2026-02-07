@@ -6,25 +6,25 @@ import { router } from 'expo-router';
 export default function Login() {
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="title" style={styles.title}>Login</ThemedText>
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-        placeholderTextColor="#888"
-      />
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        placeholderTextColor="#888"
-      />
-      
-      <Button 
-        title="Login" 
-        onPress={() => router.back()}
-      />
+        <ThemedText type="title" style={styles.title}>Login</ThemedText>
+
+        <TextInput
+            style={styles.input}
+            placeholder="Username"
+            placeholderTextColor="#888"
+        />
+
+        <TextInput
+            style={styles.input}
+            placeholder="Password"
+            secureTextEntry
+            placeholderTextColor="#888"
+        />
+
+        <Button
+            title="Login"
+            onPress={() => router.push('/safety-plan')}
+        />
     </ThemedView>
   );
 }
