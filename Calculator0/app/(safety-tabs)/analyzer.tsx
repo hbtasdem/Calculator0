@@ -1,18 +1,21 @@
 import { useState } from 'react';
-import { StyleSheet, Button, ScrollView, ActivityIndicator, View } from 'react-native';
+import { StyleSheet, Button, ScrollView, ActivityIndicator, View, TextInput } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import Constants from 'expo-constants';
 
-// Replace with your actual key or an environment variable
-const api_key = Constants.expoConfig?.extra?.EXPO_PUBLIC_GEMINI_API_KEY || 
-                process.env.EXPO_PUBLIC_GEMINI_API_KEY;
+const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY || "";
+
+// Helper to add a delay
+const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 export default function Analyzer() {
   const [abuseAnalysis, setAbuseAnalysis] = useState('');
   const [savingsAdvice, setSavingsAdvice] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  const [location, setLocation] = useState('');
+  const [dependents, setDependents] = useState('');
 
   const transactionHistory = [
     { date: '2024-01-15', merchant: 'Grocery Store', amount: -45.32 },
@@ -27,35 +30,59 @@ export default function Analyzer() {
     setSavingsAdvice('');
 
     try {
-      const genAI = new GoogleGenerativeAI(api_key);
+      const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+      // Switched to 1.5-flash for more stable hackathon quota
       const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-      const abusePrompt = ` \
+      // PROMPT 1: Abuse Analysis
+      const abusePrompt = `
         Analyze a transaction history for signs of financial abuse.
         Look for common red flags, such as unusual gaps in spending, signs of an allowance and microtransactions,
         deliberate overdrafting, any other suspicious activity you think would signify financial abuse.
-        Consider this transaction history: ${JSON.stringify(transactionHistory)} \
-        List every red flag that applies, give an explanation of why it may point to financial abuse, and rate it from \
-        low, medium, or high in terms of how likely it is that the activity is associated with financial abuse. \
-        If there are no red flag, you can say that as well. Your response should be well-organized and easy to follow. \
-        Make sure the bullet points are well-summarized, I don't want a wall of text. Give the overall risk level of the account at the top. \
-        The response should have the format \
-        Risk Level: High, Medium, or Low \n\
-        Reasons for risk level: \n...
+        Consider this transaction history: ${JSON.stringify(transactionHistory)}
+        List every red flag that applies, give an explanation of why it may point to financial abuse, and rate it from
+        low, medium, or high in terms of how likely it is that the activity is associated with financial abuse.
+        If there are no red flag, you can say that as well. Your response should be well-organized and easy to follow.
+        Make sure the bullet points are well-summarized, I don't want a wall of text. Give the overall risk level of the account at the top.
+        The response should have the format:
+
+        Risk Level: High, Medium, or Low
+
+        Reasons for risk level:
+        - Summarized risk 1
+        - Summarized risk 2
       `;
 
-      const savingsPrompt = `\
-        Provide a concise guide on how much money a person should save before moving to a new location. Include factors like deposits, first month's rent, and emergency buffers.`;
+      // PROMPT 2: Exit Strategy
+      const savingsPrompt = `
+        Act as a financial safety expert. Create a 'Financial Exit Strategy' for a user in ${location || 'a generic city'} with ${dependents || '0'} children.
+        Provide a total target amount to save based on local cost of living for at least a month of living. 
+        Format the response exactly as follows:
 
-      // Parallel execution for better performance during demos
-      const [abuseRes, savingsRes] = await Promise.all([
-        model.generateContent(abusePrompt),
-        model.generateContent(savingsPrompt)
-      ]);
+        For (area) and (number) children, and for at least one month of living costs, it is recommended to save:
+        $(amount)
 
+        The breakdown of funds should be:
+        - Cash (Untraceable): $
+        - Personal Checking (private account): $
+        
+        And creative saving methods:
+        - Gift Cards: $
+        - (Other methods): $
+      `;
+
+      // SEQUENTIAL EXECUTION
+      const abuseRes = await model.generateContent(abusePrompt);
       setAbuseAnalysis(abuseRes.response.text());
+
+      // Wait 2 seconds before the second call to respect rate limits
+      await delay(2000); 
+
+      const savingsRes = await model.generateContent(savingsPrompt);
       setSavingsAdvice(savingsRes.response.text());
-    } catch (error) {
+
+    } catch (error: any) {
+      console.error(error);
       setAbuseAnalysis('Error: ' + error.message);
     } finally {
       setLoading(false);
@@ -66,19 +93,38 @@ export default function Analyzer() {
     <ThemedView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <ThemedText type="title" style={styles.title}>Financial Insights</ThemedText>
+        
+        <View style={styles.inputSection}>
+          <ThemedText style={styles.label}>Current Location (Zip Code)</ThemedText>
+          <TextInput 
+            style={styles.input} 
+            value={location}
+            onChangeText={setLocation}
+            placeholder="e.g. 78701"
+            placeholderTextColor="#666"
+          />
+          <ThemedText style={styles.label}>Number of Dependents</ThemedText>
+          <TextInput 
+            style={styles.input} 
+            placeholder="0" 
+            placeholderTextColor="#666"
+            keyboardType="numeric"
+            value={dependents}
+            onChangeText={setDependents}
+          />
+        </View>
 
         <View style={styles.buttonWrapper}>
-          <Button
-            title="Analyze Finances with Gemini"
+          <Button 
+            title="Analyze Finances with Gemini" 
             onPress={analyzeFinances}
             disabled={loading}
-            color="#2196F3" // Nice blue button
+            color="#2196F3"
           />
         </View>
 
         {loading && <ActivityIndicator size="large" color="#BB86FC" style={styles.loader} />}
 
-        {/* Box 1: Financial Abuse Risk */}
         {abuseAnalysis !== '' && (
           <View style={styles.card}>
             <ThemedText style={styles.cardTitle}>Financial Abuse Risk</ThemedText>
@@ -87,10 +133,9 @@ export default function Analyzer() {
           </View>
         )}
 
-        {/* Box 2: Savings Advice */}
         {savingsAdvice !== '' && (
           <View style={[styles.card, styles.savingsCard]}>
-            <ThemedText style={styles.cardTitle}>Emergency Moving Fund</ThemedText>
+            <ThemedText style={styles.cardTitle}>Exit Plan</ThemedText>
             <View style={[styles.divider, { backgroundColor: '#03DAC6' }]} />
             <ThemedText style={styles.resultText}>{savingsAdvice}</ThemedText>
           </View>
@@ -101,60 +146,42 @@ export default function Analyzer() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#121212', // Dark background
-  },
-  scrollContent: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  title: {
-    color: '#FFFFFF',
+  container: { flex: 1, backgroundColor: '#121212' },
+  scrollContent: { padding: 20, paddingBottom: 40 },
+  title: { color: '#FFFFFF', marginBottom: 15 },
+  inputSection: {
+    backgroundColor: '#1E1E1E',
+    padding: 15,
+    borderRadius: 12,
     marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#333',
   },
-  buttonWrapper: {
-    marginVertical: 15,
+  label: { color: '#BB86FC', fontSize: 14, marginBottom: 5, fontWeight: '600' },
+  input: {
+    backgroundColor: '#2A2A2A',
+    color: '#FFF',
+    padding: 10,
     borderRadius: 8,
-    overflow: 'hidden',
+    marginBottom: 15,
   },
-  loader: {
-    marginVertical: 20,
-  },
+  buttonWrapper: { marginVertical: 15, borderRadius: 8, overflow: 'hidden' },
+  loader: { marginVertical: 20 },
   card: {
-    backgroundColor: '#1E1E1E', // Dark grey card
+    backgroundColor: '#1E1E1E',
     padding: 20,
     borderRadius: 12,
     marginBottom: 20,
     borderWidth: 1,
     borderColor: '#333333',
-    // Shadow for iOS
+    elevation: 6,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
-    // Elevation for Android
-    elevation: 6,
   },
-  savingsCard: {
-    borderColor: '#018786', // Subtle teal/blue border for the second box
-  },
-  cardTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#BB86FC', // Soft purple/blue title
-    marginBottom: 8,
-  },
-  divider: {
-    height: 2,
-    backgroundColor: '#BB86FC',
-    width: '40%',
-    marginBottom: 15,
-    borderRadius: 1,
-  },
-  resultText: {
-    fontSize: 15,
-    lineHeight: 22,
-    color: '#E0E0E0', // Light grey text for readability
-  },
+  savingsCard: { borderColor: '#018786' },
+  cardTitle: { fontSize: 20, fontWeight: '700', color: '#BB86FC', marginBottom: 8 },
+  divider: { height: 2, backgroundColor: '#BB86FC', width: '40%', marginBottom: 15 },
+  resultText: { fontSize: 15, lineHeight: 22, color: '#E0E0E0' },
 });

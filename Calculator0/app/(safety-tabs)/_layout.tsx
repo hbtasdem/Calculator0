@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { router } from 'expo-router';
 
 export default function SafetyTabsLayout() {
   return (
@@ -34,6 +35,21 @@ export default function SafetyTabsLayout() {
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'book' : 'book-outline'} color={color} size={24} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="calculator"
+        options={{
+          title: 'Exit',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'close-circle' : 'close-circle-outline'} color={color} size={24} />
+          ),
+        }}
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault();
+            router.push('/(tabs)');
+          },
         }}
       />
     </Tabs>
