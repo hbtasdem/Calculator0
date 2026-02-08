@@ -28,7 +28,7 @@ export default function LoginScreen() {
         setLoading(false);
 
         if (result.success) {
-            Alert.alert('Success', 'Account created! Welcome to Cipher.', [
+            Alert.alert('Success', 'Account created! Welcome to Calculator0.', [
                 { text: 'OK', onPress: () => router.replace('/(safety-tabs)/safety-plan') }
             ]);
         } else {
@@ -78,7 +78,7 @@ export default function LoginScreen() {
                             />
                             </View>
                         </View>
-                        <Text style={styles.title}>Cipher</Text>
+                        <Text style={styles.title}>Calculator0</Text>
                         <Text style={styles.subtitle}>Your financial safety, encrypted</Text>
                     </View>
 
