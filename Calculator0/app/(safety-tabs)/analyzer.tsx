@@ -4,14 +4,16 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const GEMINI_API_KEY = "API_KEY";
+const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY || "";
+
+// Helper to add a delay
+const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 export default function Analyzer() {
   const [abuseAnalysis, setAbuseAnalysis] = useState('');
   const [savingsAdvice, setSavingsAdvice] = useState('');
   const [loading, setLoading] = useState(false);
   
-  // User Inputs for Context
   const [location, setLocation] = useState('');
   const [dependents, setDependents] = useState('');
 
@@ -29,8 +31,10 @@ export default function Analyzer() {
 
     try {
       const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+      // Switched to 1.5-flash for more stable hackathon quota
       const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
+      // PROMPT 1: Abuse Analysis
       const abusePrompt = `
         Analyze a transaction history for signs of financial abuse.
         Look for common red flags, such as unusual gaps in spending, signs of an allowance and microtransactions,
@@ -40,43 +44,45 @@ export default function Analyzer() {
         low, medium, or high in terms of how likely it is that the activity is associated with financial abuse.
         If there are no red flag, you can say that as well. Your response should be well-organized and easy to follow.
         Make sure the bullet points are well-summarized, I don't want a wall of text. Give the overall risk level of the account at the top.
-        The response should have the format
+        The response should have the format:
 
         Risk Level: High, Medium, or Low
 
         Reasons for risk level:
-        Well-summarized risk 1
-        well-summarized risk 2...
+        - Summarized risk 1
+        - Summarized risk 2
       `;
 
+      // PROMPT 2: Exit Strategy
       const savingsPrompt = `
         Act as a financial safety expert. Create a 'Financial Exit Strategy' for a user in ${location || 'a generic city'} with ${dependents || '0'} children.
-        Provide a total target amount to save based on local cost of living for at least a month of living. Break down the money saved into categories of:
-        Required: Cash (untraceable), Required: Personal Checking (private account), Optional: Gift Cards Creative Saving Methods: 3-4 discreet ways to save
-        (e.g., cashback at registers). In the response, keep bullet points summarized. No walls of text.
-        Format the response as:
+        Provide a total target amount to save based on local cost of living for at least a month of living. 
+        Format the response exactly as follows:
 
-        For (area based on zip code or generic USA city) and (number of children) children, and for at least one month of living costs, it is reccomended to save:
-        $(amount of money)
+        For (area) and (number) children, and for at least one month of living costs, it is recommended to save:
+        $(amount)
 
         The breakdown of funds should be:
-
-        Cash (Untraceable):  $
-        Personal Checking (private account): $
+        - Cash (Untraceable): $
+        - Personal Checking (private account): $
         
         And creative saving methods:
-        Gift Cards: $
-        (specify other methods here too): $
+        - Gift Cards: $
+        - (Other methods): $
       `;
 
-      const [abuseRes, savingsRes] = await Promise.all([
-        model.generateContent(abusePrompt),
-        model.generateContent(savingsPrompt)
-      ]);
-
+      // SEQUENTIAL EXECUTION
+      const abuseRes = await model.generateContent(abusePrompt);
       setAbuseAnalysis(abuseRes.response.text());
+
+      // Wait 2 seconds before the second call to respect rate limits
+      await delay(2000); 
+
+      const savingsRes = await model.generateContent(savingsPrompt);
       setSavingsAdvice(savingsRes.response.text());
-    } catch (error) {
+
+    } catch (error: any) {
+      console.error(error);
       setAbuseAnalysis('Error: ' + error.message);
     } finally {
       setLoading(false);
@@ -88,13 +94,14 @@ export default function Analyzer() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <ThemedText type="title" style={styles.title}>Financial Insights</ThemedText>
         
-        {/* User Input Section */}
         <View style={styles.inputSection}>
           <ThemedText style={styles.label}>Current Location (Zip Code)</ThemedText>
           <TextInput 
             style={styles.input} 
             value={location}
             onChangeText={setLocation}
+            placeholder="e.g. 78701"
+            placeholderTextColor="#666"
           />
           <ThemedText style={styles.label}>Number of Dependents</ThemedText>
           <TextInput 
@@ -118,7 +125,6 @@ export default function Analyzer() {
 
         {loading && <ActivityIndicator size="large" color="#BB86FC" style={styles.loader} />}
 
-        {/* Box 1: Financial Abuse Risk */}
         {abuseAnalysis !== '' && (
           <View style={styles.card}>
             <ThemedText style={styles.cardTitle}>Financial Abuse Risk</ThemedText>
@@ -127,7 +133,6 @@ export default function Analyzer() {
           </View>
         )}
 
-        {/* Box 2: Exit Plan */}
         {savingsAdvice !== '' && (
           <View style={[styles.card, styles.savingsCard]}>
             <ThemedText style={styles.cardTitle}>Exit Plan</ThemedText>
