@@ -10,7 +10,7 @@ This package contains encrypted banking transaction data for financial abuse det
 
 ### Decryption Details:
 - **Encryption Method**: AES-256-CBC
-- **Key (Base64)**: 2PHfkJQR5cs202LAT4RThcyvD+pTVip5VYvgzki7Vgs=
+- **Key (Base64)**: YykZdykzzC5CMmYMqtaSL/9UFgARPAGJKium3562F+M=
 
 ### Encrypted Package:
 The encrypted data is in: encrypted_data/customer_6987bd7095150878eaff8ceb_encrypted.json
@@ -35,7 +35,7 @@ with open('encrypted_data/customer_6987bd7095150878eaff8ceb_encrypted.json', 'r'
     encrypted_package = json.load(f)
 
 # Decryption key
-key = base64.b64decode("2PHfkJQR5cs202LAT4RThcyvD+pTVip5VYvgzki7Vgs=")
+key = base64.b64decode("YykZdykzzC5CMmYMqtaSL/9UFgARPAGJKium3562F+M=")
 
 # Decrypt
 encrypted_data = base64.b64decode(encrypted_package['encrypted_data'])

@@ -1,62 +1,83 @@
 import requests
 import sys
 import os
+from dotenv import load_dotenv
 
-API_KEY = "9d787b27cf859b503a82cd83e58be1ec"
+load_dotenv()
+
 BASE_URL = "http://api.nessieisreal.com"
+API_KEY = os.getenv("NESSIE_API_KEY")
 
-# Get customer name from command line (default to Sarah)
 customer_name = sys.argv[1] if len(sys.argv) > 1 else "Sarah"
 
-# 1. Get all customers
-resp = requests.get(f"{BASE_URL}/customers?key={API_KEY}").json()
-# API may return a list or a dict like {"customers": [...]}
-if isinstance(resp, list):
-    customers = resp
-else:
-    customers = resp.get("customers") or resp.get("results")
-    if customers is None and isinstance(resp, dict):
-        for v in resp.values():
-            if isinstance(v, list) and v and isinstance(v[0], dict):
-                customers = v
-                break
-        if customers is None:
-            customers = []
+# Helper to unwrap API responses
+def unwrap(resp):
+    if isinstance(resp, list):
+        return resp
+    if isinstance(resp, dict):
+        for key in ['customers', 'accounts', 'purchases', 'deposits', 'results']:
+            if key in resp:
+                return resp[key]
+        # If it's a single object response, return as list
+        if '_id' in resp:
+            return [resp]
+    return []
 
-# 2. Find the customer (each item must be a dict with first_name)
-customer = next(
-    (c for c in customers if isinstance(c, dict) and customer_name.lower() in c.get("first_name", "").lower()),
-    None
-)
+# 1. Get all customers
+customers = unwrap(requests.get(f"{BASE_URL}/customers?key={API_KEY}").json())
+
+# 2. Find the LATEST matching customer (most recent)
+matching = [c for c in customers if customer_name.lower() in c.get("first_name", "").lower()]
+customer = matching[-1] if matching else None  # Get the LAST one (most recent)
+
 if not customer:
-    print(f"Customer '{customer_name}' not found. Available: {[c.get('first_name') for c in customers if isinstance(c, dict)]}")
+    print(f"Customer '{customer_name}' not found.")
+    print(f"Available customers: {[c.get('first_name') for c in customers]}")
     sys.exit(1)
+
 print(f"\n{'='*80}")
 print(f"Customer: {customer['first_name']} {customer['last_name']}")
+print(f"ID: {customer['_id']}")
+print(f"Address: {customer.get('address', {}).get('city', 'N/A')}, {customer.get('address', {}).get('state', 'N/A')}")
 print(f"{'='*80}")
 
 # 3. Get accounts
-accounts = requests.get(f"{BASE_URL}/customers/{customer['_id']}/accounts?key={API_KEY}").json()
+accounts = unwrap(requests.get(f"{BASE_URL}/customers/{customer['_id']}/accounts?key={API_KEY}").json())
+
+if not accounts:
+    print(f"❌ No accounts found for this customer!")
+    print(f"This customer might be from an old run. Use the latest customer IDs from customer_ids.json")
+    sys.exit(1)
+
 account = accounts[0]
 account_id = account['_id']
 
 print(f"Account: {account['nickname']}")
-print(f"Balance: ${account['balance']:,.2f}\n")
+print(f"Balance: ${account['balance']:,.2f}")
+print(f"Rewards: {account.get('rewards', 0)}\n")
 
 # 4. Get purchases
-purchases = requests.get(f"{BASE_URL}/accounts/{account_id}/purchases?key={API_KEY}").json()
+purchases = unwrap(requests.get(f"{BASE_URL}/accounts/{account_id}/purchases?key={API_KEY}").json())
 print(f"📦 PURCHASES ({len(purchases)} total):")
 print("-" * 80)
-for p in sorted(purchases, key=lambda x: x.get('purchase_date', ''))[:20]:  # Show first 20
-    print(f"{p.get('purchase_date')}: ${p.get('amount', 0):>8.2f} - {p.get('description', 'N/A')}")
+if purchases:
+    for p in sorted(purchases, key=lambda x: x.get('purchase_date', ''))[:20]:
+        print(f"{p.get('purchase_date')}: ${p.get('amount', 0):>8.2f} - {p.get('description', 'N/A')}")
+else:
+    print("No purchases found.")
 
 # 5. Get deposits
-deposits = requests.get(f"{BASE_URL}/accounts/{account_id}/deposits?key={API_KEY}").json()
+deposits = unwrap(requests.get(f"{BASE_URL}/accounts/{account_id}/deposits?key={API_KEY}").json())
 print(f"\n💰 DEPOSITS ({len(deposits)} total):")
 print("-" * 80)
-for d in sorted(deposits, key=lambda x: x.get('transaction_date', ''))[:20]:  # Show first 20
-    print(f"{d.get('transaction_date')}: ${d.get('amount', 0):>8.2f} - {d.get('description', 'N/A')}")
+if deposits:
+    for d in sorted(deposits, key=lambda x: x.get('transaction_date', ''))[:20]:
+        print(f"{d.get('transaction_date')}: ${d.get('amount', 0):>8.2f} - {d.get('description', 'N/A')}")
+else:
+    print("No deposits found.")
 
 print(f"\n{'='*80}")
 print(f"Total Spent: ${sum(p.get('amount', 0) for p in purchases):,.2f}")
 print(f"Total Deposited: ${sum(d.get('amount', 0) for d in deposits):,.2f}")
+print(f"Net: ${sum(d.get('amount', 0) for d in deposits) - sum(p.get('amount', 0) for p in purchases):,.2f}")
+print(f"{'='*80}")

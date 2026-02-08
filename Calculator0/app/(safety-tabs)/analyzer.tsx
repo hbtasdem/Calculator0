@@ -5,7 +5,7 @@ import { ThemedView } from '@/components/themed-view';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Replace with your actual key or an environment variable
-const GEMINI_API_KEY = "YOUR_API_KEY";
+const GEMINI_API_KEY = "AIzaSyA5UX5sv2ckQTbK8M3kZYv_UxEb4iVlWSo";
 
 export default function Analyzer() {
   const [abuseAnalysis, setAbuseAnalysis] = useState('');

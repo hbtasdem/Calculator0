@@ -1,0 +1,32 @@
+{
+  "customer_id": "6987f21d95150878eaff994b",
+  "customer_name": "Jennifer Lee",
+  "customer_metadata": {
+    "first_name": "Jennifer",
+    "last_name": "Lee",
+    "address": {
+      "street_number": "789",
+      "street_name": "Control Court",
+      "city": "San Francisco",
+      "state": "CA",
+      "zip": "94104"
+    }
+  },
+  "account": {
+    "account_id": "6987f21d95150878eaff994c",
+    "type": "Checking",
+    "nickname": "Jennifer's Checking Account",
+    "balance": 150,
+    "rewards": 0
+  },
+  "deposits": [],
+  "purchases": [],
+  "statistics": {
+    "total_deposits": 0,
+    "total_purchases": 0,
+    "total_deposited": 0,
+    "total_spent": 0,
+    "date_range": "6 months",
+    "categories_active": 0
+  }
+}

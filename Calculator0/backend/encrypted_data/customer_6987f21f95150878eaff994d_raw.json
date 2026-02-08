@@ -1,0 +1,32 @@
+{
+  "customer_id": "6987f21f95150878eaff994d",
+  "customer_name": "Michael Thompson",
+  "customer_metadata": {
+    "first_name": "Michael",
+    "last_name": "Thompson",
+    "address": {
+      "street_number": "321",
+      "street_name": "Recovery Road",
+      "city": "San Francisco",
+      "state": "CA",
+      "zip": "94105"
+    }
+  },
+  "account": {
+    "account_id": "6987f21f95150878eaff994e",
+    "type": "Checking",
+    "nickname": "Michael's Checking Account",
+    "balance": 2800,
+    "rewards": 75
+  },
+  "deposits": [],
+  "purchases": [],
+  "statistics": {
+    "total_deposits": 0,
+    "total_purchases": 0,
+    "total_deposited": 0,
+    "total_spent": 0,
+    "date_range": "6 months",
+    "categories_active": 0
+  }
+}

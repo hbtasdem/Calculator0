@@ -10,10 +10,12 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.backends import default_backend
 import os
+from dotenv import load_dotenv
 
-# API Configuration
+load_dotenv()
+
 BASE_URL = "http://api.nessieisreal.com"
-API_KEY = "9d787b27cf859b503a82cd83e58be1ec"
+API_KEY = os.getenv("NESSIE_API_KEY")
 
 
 class SecureDataPipeline:
@@ -439,46 +441,8 @@ def main():
         except Exception as e:
             print(f"❌ Error processing customer {customer_id}: {e}")
     
-#     # Create customer mapping file
-#     print("\n" + "="*80)
-#     print("CREATING CUSTOMER MAPPING")
-#     print("="*80)
     mapping = pipeline.create_customer_mapping()
-    
-#     # Summary
-#     print("\n" + "="*80)
-#     print("PROCESSING COMPLETE")
-#     print("="*80)
-#     print("\n📦 Generated Files:")
-#     for customer_id, result in results.items():
-#         print(f"\nCustomer ID: {customer_id}")
-#         print(f"Name: {result['customer_name']}")
-#         print(f"  ├─ Raw JSON: {result['raw_file']}")
-#         print(f"  ├─ Encrypted: {result['encrypted_file']}")
-#         print(f"  ├─ Instructions: encrypted_data/customer_{customer_id}_gemini_instructions.txt")
-#         print(f"  └─ Prompt: encrypted_data/customer_{customer_id}_prompt.txt")
-    
-#     print(f"\n🔐 Encryption Key: {key_file}")
-#     print(f"📋 Customer Mapping: encrypted_data/customer_mapping.json")
-    
-#     print("\n" + "="*80)
-#     print("NEXT STEPS")
-#     print("="*80)
-#     print("""
-# 1. Check customer_mapping.json to see all customer IDs
-# 2. Send encrypted files to Gemini by customer ID
-# 3. Include the decryption instructions
-# 4. Gemini will decrypt and analyze the data
-# 5. You'll get a risk assessment with evidence
-
-# Expected Profiles:
-# • Customer with consistent patterns → LOW RISK (no abuse)
-# • Customer with declining patterns → MEDIUM-HIGH RISK (escalating abuse)
-# • Customer with minimal transactions → HIGH RISK (severe abuse)
-
-# All references now use customer IDs instead of names for better data integrity.
-#     """)
-
+  
 
 if __name__ == "__main__":
     main()

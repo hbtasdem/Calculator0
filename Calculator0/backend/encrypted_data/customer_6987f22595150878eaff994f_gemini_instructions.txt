@@ -1,19 +1,19 @@
 
-# Gemini Analysis Package - Customer ID: 6987a9ea95150878eaff8906
+# Gemini Analysis Package - Customer ID: 6987f22595150878eaff994f
 
 ## 🔐 Encrypted Financial Data for Analysis
 
 This package contains encrypted banking transaction data for financial abuse detection.
 
-**Customer ID**: 6987a9ea95150878eaff8906
-**Customer Name**: Sarah Johnson (for reference only)
+**Customer ID**: 6987f22595150878eaff994f
+**Customer Name**: David Park (for reference only)
 
 ### Decryption Details:
 - **Encryption Method**: AES-256-CBC
 - **Key (Base64)**: YykZdykzzC5CMmYMqtaSL/9UFgARPAGJKium3562F+M=
 
 ### Encrypted Package:
-The encrypted data is in: encrypted_data/customer_6987a9ea95150878eaff8906_encrypted.json
+The encrypted data is in: encrypted_data/customer_6987f22595150878eaff994f_encrypted.json
 
 ### Your Task:
 1. Decrypt the data using the provided AES key
@@ -31,7 +31,7 @@ from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.backends import default_backend
 
 # Load encrypted package
-with open('encrypted_data/customer_6987a9ea95150878eaff8906_encrypted.json', 'r') as f:
+with open('encrypted_data/customer_6987f22595150878eaff994f_encrypted.json', 'r') as f:
     encrypted_package = json.load(f)
 
 # Decryption key
@@ -54,7 +54,7 @@ print(json.dumps(data, indent=2))
 ```
 
 ### Expected Analysis:
-- **Customer ID**: 6987a9ea95150878eaff8906
+- **Customer ID**: 6987f22595150878eaff994f
 - **Deposits**: 0
 - **Purchases**: 0
 - **Categories Active**: 0
