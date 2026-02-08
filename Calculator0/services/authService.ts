@@ -1,5 +1,5 @@
-import { 
-  signInWithEmailAndPassword, 
+import {
+  signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
@@ -20,16 +20,16 @@ class AuthService {
     try {
       // Create user with Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      
+
       // Store customer ID in AsyncStorage linked to user UID
       await AsyncStorage.setItem(`customer_id_${userCredential.user.uid}`, customerId);
-      
+
       return { success: true };
     } catch (error: any) {
       console.error('Sign up error:', error);
-      return { 
-        success: false, 
-        error: this.getErrorMessage(error.code) 
+      return {
+        success: false,
+        error: this.getErrorMessage(error.code)
       };
     }
   }
@@ -47,13 +47,13 @@ class AuthService {
       // Regular sign in
       await signInWithEmailAndPassword(auth, email, password);
       await AsyncStorage.setItem('decoy_mode', 'false');
-      
+
       return { success: true, isDecoy: false };
     } catch (error: any) {
       console.error('Sign in error:', error);
-      return { 
-        success: false, 
-        error: this.getErrorMessage(error.code) 
+      return {
+        success: false,
+        error: this.getErrorMessage(error.code)
       };
     }
   }
@@ -83,7 +83,7 @@ class AuthService {
   async getCustomerId(): Promise<string | null> {
     const user = this.getCurrentUser();
     if (!user) return null;
-    
+
     return await AsyncStorage.getItem(`customer_id_${user.uid}`);
   }
 

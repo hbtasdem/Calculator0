@@ -3,9 +3,11 @@ import { StyleSheet, Button, ScrollView, ActivityIndicator, View } from 'react-n
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import Constants from 'expo-constants';
 
 // Replace with your actual key or an environment variable
-const GEMINI_API_KEY = "AIzaSyA5UX5sv2ckQTbK8M3kZYv_UxEb4iVlWSo";
+const api_key = Constants.expoConfig?.extra?.EXPO_PUBLIC_GEMINI_API_KEY || 
+                process.env.EXPO_PUBLIC_GEMINI_API_KEY;
 
 export default function Analyzer() {
   const [abuseAnalysis, setAbuseAnalysis] = useState('');
@@ -25,10 +27,10 @@ export default function Analyzer() {
     setSavingsAdvice('');
 
     try {
-      const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+      const genAI = new GoogleGenerativeAI(api_key);
       const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-      const abusePrompt =  ` \
+      const abusePrompt = ` \
         Analyze a transaction history for signs of financial abuse.
         Look for common red flags, such as unusual gaps in spending, signs of an allowance and microtransactions,
         deliberate overdrafting, any other suspicious activity you think would signify financial abuse.
@@ -64,10 +66,10 @@ export default function Analyzer() {
     <ThemedView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <ThemedText type="title" style={styles.title}>Financial Insights</ThemedText>
-        
+
         <View style={styles.buttonWrapper}>
-          <Button 
-            title="Analyze Finances with Gemini" 
+          <Button
+            title="Analyze Finances with Gemini"
             onPress={analyzeFinances}
             disabled={loading}
             color="#2196F3" // Nice blue button
