@@ -1,0 +1,104 @@
+{
+  "encryption_key": "2PHfkJQR5cs202LAT4RThcyvD+pTVip5VYvgzki7Vgs=",
+  "customers": [
+    {
+      "customer_id": "698773cd95150878eaff72d4",
+      "name": "Sarah Johnson",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_698773cd95150878eaff72d4_raw.json",
+        "encrypted": "customer_698773cd95150878eaff72d4_encrypted.json",
+        "instructions": "customer_698773cd95150878eaff72d4_gemini_instructions.txt",
+        "prompt": "customer_698773cd95150878eaff72d4_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "698773cd95150878eaff72d5",
+      "name": "Maria Garcia",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_698773cd95150878eaff72d5_raw.json",
+        "encrypted": "customer_698773cd95150878eaff72d5_encrypted.json",
+        "instructions": "customer_698773cd95150878eaff72d5_gemini_instructions.txt",
+        "prompt": "customer_698773cd95150878eaff72d5_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "698773cd95150878eaff72d6",
+      "name": "Emily Chen",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_698773cd95150878eaff72d6_raw.json",
+        "encrypted": "customer_698773cd95150878eaff72d6_encrypted.json",
+        "instructions": "customer_698773cd95150878eaff72d6_gemini_instructions.txt",
+        "prompt": "customer_698773cd95150878eaff72d6_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987a9ea95150878eaff8906",
+      "name": "Sarah Johnson",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987a9ea95150878eaff8906_raw.json",
+        "encrypted": "customer_6987a9ea95150878eaff8906_encrypted.json",
+        "instructions": "customer_6987a9ea95150878eaff8906_gemini_instructions.txt",
+        "prompt": "customer_6987a9ea95150878eaff8906_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987a9fc95150878eaff8908",
+      "name": "Maria Rodriguez",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987a9fc95150878eaff8908_raw.json",
+        "encrypted": "customer_6987a9fc95150878eaff8908_encrypted.json",
+        "instructions": "customer_6987a9fc95150878eaff8908_gemini_instructions.txt",
+        "prompt": "customer_6987a9fc95150878eaff8908_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987aa0495150878eaff890a",
+      "name": "Jennifer Lee",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987aa0495150878eaff890a_raw.json",
+        "encrypted": "customer_6987aa0495150878eaff890a_encrypted.json",
+        "instructions": "customer_6987aa0495150878eaff890a_gemini_instructions.txt",
+        "prompt": "customer_6987aa0495150878eaff890a_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987bd7095150878eaff8ceb",
+      "name": "Sarah Johnson",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987bd7095150878eaff8ceb_raw.json",
+        "encrypted": "customer_6987bd7095150878eaff8ceb_encrypted.json",
+        "instructions": "customer_6987bd7095150878eaff8ceb_gemini_instructions.txt",
+        "prompt": "customer_6987bd7095150878eaff8ceb_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987bd8395150878eaff8ced",
+      "name": "Maria Rodriguez",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987bd8395150878eaff8ced_raw.json",
+        "encrypted": "customer_6987bd8395150878eaff8ced_encrypted.json",
+        "instructions": "customer_6987bd8395150878eaff8ced_gemini_instructions.txt",
+        "prompt": "customer_6987bd8395150878eaff8ced_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987bd8895150878eaff8cef",
+      "name": "Jennifer Lee",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987bd8895150878eaff8cef_raw.json",
+        "encrypted": "customer_6987bd8895150878eaff8cef_encrypted.json",
+        "instructions": "customer_6987bd8895150878eaff8cef_gemini_instructions.txt",
+        "prompt": "customer_6987bd8895150878eaff8cef_prompt.txt"
+      }
+    }
+  ]
+}

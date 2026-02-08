@@ -1,3 +1,91 @@
+// import { View, TextInput, Button, StyleSheet } from 'react-native';
+// import { ThemedText } from '@/components/themed-text';
+// import { ThemedView } from '@/components/themed-view';
+// import { router } from 'expo-router';
+
+// export default function Login() {
+//   return (
+//     <ThemedView style={styles.container}>
+//         <ThemedText type="title" style={styles.title}>Login</ThemedText>
+
+//         <TextInput
+//             style={styles.input}
+//             placeholder="Username"
+//             placeholderTextColor="#888"
+//         />
+
+//         <TextInput
+//             style={styles.input}
+//             placeholder="Password"
+//             secureTextEntry
+//             placeholderTextColor="#888"
+//         />
+
+//         <Button
+//             title="Login"
+//             onPress={() => router.push('/(safety-tabs)/safety-plan')}
+//         />
+//     </ThemedView>
+//   );
+// }
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     padding: 20,
+//   },
+//   title: {
+//     marginBottom: 30,
+//     textAlign: 'center',
+//   },
+//   input: {
+//     height: 50,
+//     borderWidth: 1,
+//     borderColor: '#ddd',
+//     borderRadius: 8,
+//     paddingHorizontal: 15,
+//     marginBottom: 15,
+//     fontSize: 16,
+//     backgroundColor: '#fff',
+//   },
+// });
+
+import { initializeApp, getApp, getApps } from "firebase/app";
+import {
+    initializeAuth,
+    getReactNativePersistence,
+    getAuth
+} from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const firebaseConfig = {
+    apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID
+};
+
+// 1. Initialize Firebase App (checks if already initialized)
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+
+// 2. Initialize Auth with Persistence safely
+// We use a try/catch or a singleton check to prevent the "Auth already initialized" error
+let auth;
+
+try {
+    auth = initializeAuth(app, {
+        persistence: getReactNativePersistence(AsyncStorage),
+    });
+} catch (e) {
+    // If initializeAuth fails because it's already been called, 
+    // we just get the existing instance
+    auth = getAuth(app);
+}
+
+export { auth };
 
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useState } from 'react';
@@ -28,25 +116,9 @@ export default function LoginScreen() {
     setLoading(false);
 
     if (result.success) {
-      // In __DEV__, always show the option so you can test the gate (e.g. see Expo Go hint)
-      const hasBiometrics = (await authService.isBiometricsAvailable()) || __DEV__;
-      if (hasBiometrics) {
-        Alert.alert(
-          'Welcome to 0',
-          'Use Face ID to unlock the app next time?',
-          [
-            { text: 'Not now', onPress: () => router.replace('/(tabs)') },
-            { text: 'Enable', onPress: async () => {
-              await authService.setBiometricsEnabled(true);
-              router.replace('/(tabs)');
-            } },
-          ]
-        );
-      } else {
-        Alert.alert('Success', 'Account created! Welcome to 0.', [
-          { text: 'OK', onPress: () => router.replace('/(tabs)') }
-        ]);
-      }
+      Alert.alert('Success', 'Account created! Welcome to Cipher.', [
+        { text: 'OK', onPress: () => router.replace('/(safety-tabs)/safety-plan') }
+      ]);
     } else {
       Alert.alert('Signup Failed', result.error || 'Could not create account');
     }
@@ -66,22 +138,7 @@ export default function LoginScreen() {
       if (result.isDecoy) {
         Alert.alert('Decoy Mode', 'Showing safe fake data');
       }
-      const hasBiometrics = (await authService.isBiometricsAvailable()) || __DEV__;
-      if (hasBiometrics) {
-        Alert.alert(
-          'Quick access',
-          'Use Face ID to unlock the app next time?',
-          [
-            { text: 'Not now', onPress: () => router.replace('/(tabs)') },
-            { text: 'Enable', onPress: async () => {
-              await authService.setBiometricsEnabled(true);
-              router.replace('/(tabs)');
-            } },
-          ]
-        );
-      } else {
-        router.replace('/(tabs)');
-      }
+      router.replace('/(safety-tabs)/safety-plan');
     } else {
       Alert.alert('Login Failed', result.error || 'Could not sign in');
     }
@@ -101,10 +158,10 @@ export default function LoginScreen() {
           <View style={styles.header}>
             <View style={styles.logoContainer}>
               <View style={styles.logo}>
-                <Text style={styles.logoText}>0</Text>
+                <Text style={styles.logoText}>C</Text>
               </View>
             </View>
-            <Text style={styles.title}> Welcome to 0</Text>
+            <Text style={styles.title}>Cipher</Text>
             <Text style={styles.subtitle}>Your financial safety, encrypted</Text>
           </View>
 

@@ -7,10 +7,11 @@ import requests
 import json
 from datetime import datetime, timedelta
 import random
+import os
 
-# API Configuration
 BASE_URL = "http://api.nessieisreal.com"
-API_KEY = "9d787b27cf859b503a82cd83e58be1ec"  
+API_KEY = "9d787b27cf859b503a82cd83e58be1ec"
+
 
 class FinancialAbuseDataGenerator:
     def __init__(self, api_key):
@@ -708,6 +709,7 @@ def main():
     )
     
     # Get customer ID and create account
+    print(f"DEBUG - Customer 1 response: {customer1}")
     if "objectCreated" in customer1:
         customer1_id = customer1["objectCreated"]["_id"]
         account1 = generator.create_account(
@@ -781,6 +783,45 @@ def main():
     print("\n" + "=" * 80)
     print("DATA GENERATION COMPLETE!")
     print("=" * 80)
+    
+    # Save customer IDs to a file for easy reference
+    customer_ids = {
+        "customers": [
+            {
+                "customer_id": customer1_id if "objectCreated" in customer1 else None,
+                "name": "Sarah Johnson",
+                "profile": "No Abuse - Control Group",
+                "expected_risk": "LOW"
+            },
+            {
+                "customer_id": customer2_id if "objectCreated" in customer2 else None,
+                "name": "Maria Rodriguez",
+                "profile": "Moderate Abuse - Escalating Pattern",
+                "expected_risk": "MEDIUM-HIGH"
+            },
+            {
+                "customer_id": customer3_id if "objectCreated" in customer3 else None,
+                "name": "Jennifer Lee",
+                "profile": "Severe Abuse - Complete Control",
+                "expected_risk": "HIGH"
+            }
+        ]
+    }
+    
+    import json
+    with open("customer_ids.json", "w") as f:
+        json.dump(customer_ids, f, indent=2)
+    
+    print("\n💾 CUSTOMER IDs SAVED TO: customer_ids.json")
+    print("\nCUSTOMER ID REFERENCE:")
+    for customer in customer_ids["customers"]:
+        if customer["customer_id"]:
+            print(f"\n  {customer['name']}:")
+            print(f"    ID: {customer['customer_id']}")
+            print(f"    Profile: {customer['profile']}")
+            print(f"    Expected Risk: {customer['expected_risk']}")
+    
+    print("\n" + "=" * 80)
     print("\nSUMMARY OF FINANCIAL ABUSE PATTERNS:")
     print("\n1. SARAH JOHNSON (No Abuse):")
     print("   - Regular biweekly paychecks")

@@ -1,0 +1,22 @@
+{
+  "customers": [
+    {
+      "customer_id": "6987bd7095150878eaff8ceb",
+      "name": "Sarah Johnson",
+      "profile": "No Abuse - Control Group",
+      "expected_risk": "LOW"
+    },
+    {
+      "customer_id": "6987bd8395150878eaff8ced",
+      "name": "Maria Rodriguez",
+      "profile": "Moderate Abuse - Escalating Pattern",
+      "expected_risk": "MEDIUM-HIGH"
+    },
+    {
+      "customer_id": "6987bd8895150878eaff8cef",
+      "name": "Jennifer Lee",
+      "profile": "Severe Abuse - Complete Control",
+      "expected_risk": "HIGH"
+    }
+  ]
+}

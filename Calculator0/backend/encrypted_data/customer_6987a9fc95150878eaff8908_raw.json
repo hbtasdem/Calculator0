@@ -1,0 +1,32 @@
+{
+  "customer_id": "6987a9fc95150878eaff8908",
+  "customer_name": "Maria Rodriguez",
+  "customer_metadata": {
+    "first_name": "Maria",
+    "last_name": "Rodriguez",
+    "address": {
+      "street_number": "456",
+      "street_name": "Restricted Rd",
+      "city": "San Francisco",
+      "state": "CA",
+      "zip": "94103"
+    }
+  },
+  "account": {
+    "account_id": "6987a9fd95150878eaff8909",
+    "type": "Checking",
+    "nickname": "Maria's Checking Account",
+    "balance": 1200,
+    "rewards": 25
+  },
+  "deposits": [],
+  "purchases": [],
+  "statistics": {
+    "total_deposits": 0,
+    "total_purchases": 0,
+    "total_deposited": 0,
+    "total_spent": 0,
+    "date_range": "6 months",
+    "categories_active": 0
+  }
+}

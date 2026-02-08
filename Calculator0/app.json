@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Cipher",
-    "slug": "cipher-app",
+    "name": "Calculator0",
+    "slug": "Calculator0",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yourcompany.cipher",
+      "bundleIdentifier": "com.cipher.Calculator0",
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
         "NSCameraUsageDescription": "Scan documents for secure storage",
@@ -20,7 +20,7 @@
       }
     },
     "android": {
-      "package": "com.yourcompany.cipher",
+      "package": "com.cipher.Calculator0",
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
