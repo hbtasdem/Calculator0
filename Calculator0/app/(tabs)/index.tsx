@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { StyleSheet, View, Text, Pressable } from 'react-native';
-import { Link } from 'expo-router';
+import { router } from 'expo-router';
 
 export default function HomeScreen() {
+  const [input, setInput] = useState('0');
+
   const buttons = [
     ['C', '±', '%', '÷'],
     ['7', '8', '9', '×'],
@@ -10,11 +13,31 @@ export default function HomeScreen() {
     [' ', '0', '.', '='],
   ];
 
+  const handleButtonPress = (button: string) => {
+    if (button === 'C') {
+      setInput('0');
+      return;
+    }
+
+    // Update display
+    if (input === '0') {
+      setInput(button);
+    } else {
+      setInput(input + button);
+    }
+
+    // Check if user entered "123"
+    const newInput = input === '0' ? button : input + button;
+    if (newInput === '123') {
+      router.push('/login');
+    }
+  };
+
   return (
     <View style={styles.container}>
       {/* Display */}
       <View style={styles.display}>
-        <Text style={styles.displayText}>0</Text>
+        <Text style={styles.displayText}>{input}</Text>
       </View>
 
       {/* Buttons */}
@@ -22,17 +45,11 @@ export default function HomeScreen() {
         {buttons.map((row, rowIndex) => (
           <View key={rowIndex} style={styles.row}>
             {row.map((button) => {
-              // Special case for "0" button - make it link to login
-              if (button === '0') {
-                return (
-                  <Link key={button} href="/login" asChild>
-                    <Pressable style={styles.button}>
-                      <Text style={styles.buttonText}>{button}</Text>
-                    </Pressable>
-                  </Link>
-                );
+              if (button === ' ') {
+                // Empty space
+                return <View key="space" style={styles.button} />;
               }
-              // Regular buttons
+
               const isOperator = ['÷', '×', '−', '+', '='].includes(button);
               const isTopRow = ['C', '±', '%'].includes(button);
 
@@ -44,6 +61,7 @@ export default function HomeScreen() {
                     isOperator && styles.operatorButton,
                     isTopRow && styles.topRowButton,
                   ]}
+                  onPress={() => handleButtonPress(button)}
                 >
                   <Text
                     style={[
@@ -95,12 +113,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 5,
-  },
-  zeroButton: {
-    flex: 2,
-    aspectRatio: 2.2,
-    backgroundColor: '#333',
-    borderRadius: 50,
   },
   operatorButton: {
     backgroundColor: '#ff9500',
