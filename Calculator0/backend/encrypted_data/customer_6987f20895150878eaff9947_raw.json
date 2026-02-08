@@ -1,0 +1,32 @@
+{
+  "customer_id": "6987f20895150878eaff9947",
+  "customer_name": "Sarah Johnson",
+  "customer_metadata": {
+    "first_name": "Sarah",
+    "last_name": "Johnson",
+    "address": {
+      "street_number": "123",
+      "street_name": "Independence Ave",
+      "city": "San Francisco",
+      "state": "CA",
+      "zip": "94102"
+    }
+  },
+  "account": {
+    "account_id": "6987f20895150878eaff9948",
+    "type": "Checking",
+    "nickname": "Sarah's Checking Account",
+    "balance": 5000,
+    "rewards": 150
+  },
+  "deposits": [],
+  "purchases": [],
+  "statistics": {
+    "total_deposits": 0,
+    "total_purchases": 0,
+    "total_deposited": 0,
+    "total_spent": 0,
+    "date_range": "6 months",
+    "categories_active": 0
+  }
+}

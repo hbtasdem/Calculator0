@@ -1,0 +1,43 @@
+{
+    "customer_id": "6987f44095150878eaff9961",
+    "account": {
+      "account_id": "account_003",
+      "type": "Checking",
+      "balance": 150,
+      "rewards": 0
+    },
+    "deposits": [
+      {"transaction_date": "2025-08-17", "amount": 2750.00, "description": "Payroll Deposit - Tech Solutions Inc"},
+      {"transaction_date": "2025-08-25", "amount": 350.00, "description": "Cash deposit"},
+      {"transaction_date": "2025-09-24", "amount": 280.00, "description": "Cash deposit"},
+      {"transaction_date": "2025-09-29", "amount": 420.00, "description": "Cash deposit"},
+      {"transaction_date": "2025-11-07", "amount": 310.00, "description": "Cash deposit"},
+      {"transaction_date": "2025-12-18", "amount": 240.00, "description": "Cash deposit"},
+      {"transaction_date": "2026-01-23", "amount": 195.00, "description": "Cash deposit"}
+    ],
+    "purchases": [
+      {"purchase_date": "2025-08-20", "merchant_name": "Safeway", "merchant_category": "Groceries", "amount": 38.50, "description": "Limited groceries"},
+      {"purchase_date": "2025-09-05", "merchant_name": "Safeway", "merchant_category": "Groceries", "amount": 42.30, "description": "Limited groceries"},
+      {"purchase_date": "2025-09-18", "merchant_name": "Safeway", "merchant_category": "Groceries", "amount": 35.80, "description": "Limited groceries"},
+      {"purchase_date": "2025-10-02", "merchant_name": "Safeway", "merchant_category": "Groceries", "amount": 28.90, "description": "Limited groceries"},
+      {"purchase_date": "2025-10-05", "merchant_name": "Target", "merchant_category": "Retail", "amount": 24.50, "description": "Household necessities"},
+      {"purchase_date": "2025-10-21", "merchant_name": "Safeway", "merchant_category": "Groceries", "amount": 31.20, "description": "Limited groceries"},
+      {"purchase_date": "2025-11-01", "merchant_name": "Walgreens Pharmacy", "merchant_category": "Pharmacy", "amount": 12.50, "description": "Generic medication"},
+      {"purchase_date": "2025-11-05", "merchant_name": "Safeway", "merchant_category": "Groceries", "amount": 26.40, "description": "Limited groceries"},
+      {"purchase_date": "2025-11-15", "merchant_name": "Safeway", "merchant_category": "Groceries", "amount": 33.70, "description": "Limited groceries"},
+      {"purchase_date": "2025-11-25", "merchant_name": "Target", "merchant_category": "Retail", "amount": 18.90, "description": "Household necessities"},
+      {"purchase_date": "2025-12-05", "merchant_name": "Safeway", "merchant_category": "Groceries", "amount": 29.60, "description": "Limited groceries"},
+      {"purchase_date": "2025-12-15", "merchant_name": "Safeway", "merchant_category": "Groceries", "amount": 22.80, "description": "Limited groceries"},
+      {"purchase_date": "2026-01-04", "merchant_name": "Target", "merchant_category": "Retail", "amount": 21.30, "description": "Household necessities"},
+      {"purchase_date": "2026-01-20", "merchant_name": "CVS Pharmacy", "merchant_category": "Pharmacy", "amount": 8.75, "description": "OTC medicine"},
+      {"purchase_date": "2026-01-30", "merchant_name": "Safeway", "merchant_category": "Groceries", "amount": 19.40, "description": "Limited groceries"}
+    ],
+    "statistics": {
+      "total_deposits": 7,
+      "total_purchases": 15,
+      "total_deposited": 4545.00,
+      "total_spent": 394.55,
+      "date_range": "6 months",
+      "categories_active": 3
+    }
+  }

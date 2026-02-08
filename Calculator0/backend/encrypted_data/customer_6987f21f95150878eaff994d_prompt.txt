@@ -1,0 +1,14 @@
+
+I have encrypted banking transaction data that I need you to analyze for signs of financial abuse.
+
+Customer ID: 6987f21f95150878eaff994d
+Encryption: AES-256-CBC
+
+Please help me:
+1. Decrypt the attached data using the provided key
+2. Analyze the transaction patterns
+3. Identify any signs of financial abuse (irregular deposits, restricted spending, category elimination, etc.)
+4. Provide a risk level: LOW / MEDIUM / HIGH
+5. Explain your reasoning with specific evidence
+
+The encrypted package and decryption key are in the attached file.

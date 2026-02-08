@@ -1,0 +1,214 @@
+{
+  "encryption_key": "YykZdykzzC5CMmYMqtaSL/9UFgARPAGJKium3562F+M=",
+  "customers": [
+    {
+      "customer_id": "698773cd95150878eaff72d4",
+      "name": "Sarah Johnson",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_698773cd95150878eaff72d4_raw.json",
+        "encrypted": "customer_698773cd95150878eaff72d4_encrypted.json",
+        "instructions": "customer_698773cd95150878eaff72d4_gemini_instructions.txt",
+        "prompt": "customer_698773cd95150878eaff72d4_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "698773cd95150878eaff72d5",
+      "name": "Maria Garcia",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_698773cd95150878eaff72d5_raw.json",
+        "encrypted": "customer_698773cd95150878eaff72d5_encrypted.json",
+        "instructions": "customer_698773cd95150878eaff72d5_gemini_instructions.txt",
+        "prompt": "customer_698773cd95150878eaff72d5_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "698773cd95150878eaff72d6",
+      "name": "Emily Chen",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_698773cd95150878eaff72d6_raw.json",
+        "encrypted": "customer_698773cd95150878eaff72d6_encrypted.json",
+        "instructions": "customer_698773cd95150878eaff72d6_gemini_instructions.txt",
+        "prompt": "customer_698773cd95150878eaff72d6_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987a9ea95150878eaff8906",
+      "name": "Sarah Johnson",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987a9ea95150878eaff8906_raw.json",
+        "encrypted": "customer_6987a9ea95150878eaff8906_encrypted.json",
+        "instructions": "customer_6987a9ea95150878eaff8906_gemini_instructions.txt",
+        "prompt": "customer_6987a9ea95150878eaff8906_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987a9fc95150878eaff8908",
+      "name": "Maria Rodriguez",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987a9fc95150878eaff8908_raw.json",
+        "encrypted": "customer_6987a9fc95150878eaff8908_encrypted.json",
+        "instructions": "customer_6987a9fc95150878eaff8908_gemini_instructions.txt",
+        "prompt": "customer_6987a9fc95150878eaff8908_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987aa0495150878eaff890a",
+      "name": "Jennifer Lee",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987aa0495150878eaff890a_raw.json",
+        "encrypted": "customer_6987aa0495150878eaff890a_encrypted.json",
+        "instructions": "customer_6987aa0495150878eaff890a_gemini_instructions.txt",
+        "prompt": "customer_6987aa0495150878eaff890a_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987bd7095150878eaff8ceb",
+      "name": "Sarah Johnson",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987bd7095150878eaff8ceb_raw.json",
+        "encrypted": "customer_6987bd7095150878eaff8ceb_encrypted.json",
+        "instructions": "customer_6987bd7095150878eaff8ceb_gemini_instructions.txt",
+        "prompt": "customer_6987bd7095150878eaff8ceb_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987bd8395150878eaff8ced",
+      "name": "Maria Rodriguez",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987bd8395150878eaff8ced_raw.json",
+        "encrypted": "customer_6987bd8395150878eaff8ced_encrypted.json",
+        "instructions": "customer_6987bd8395150878eaff8ced_gemini_instructions.txt",
+        "prompt": "customer_6987bd8395150878eaff8ced_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987bd8895150878eaff8cef",
+      "name": "Jennifer Lee",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987bd8895150878eaff8cef_raw.json",
+        "encrypted": "customer_6987bd8895150878eaff8cef_encrypted.json",
+        "instructions": "customer_6987bd8895150878eaff8cef_gemini_instructions.txt",
+        "prompt": "customer_6987bd8895150878eaff8cef_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987f20895150878eaff9947",
+      "name": "Sarah Johnson",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987f20895150878eaff9947_raw.json",
+        "encrypted": "customer_6987f20895150878eaff9947_encrypted.json",
+        "instructions": "customer_6987f20895150878eaff9947_gemini_instructions.txt",
+        "prompt": "customer_6987f20895150878eaff9947_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987f21995150878eaff9949",
+      "name": "Maria Rodriguez",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987f21995150878eaff9949_raw.json",
+        "encrypted": "customer_6987f21995150878eaff9949_encrypted.json",
+        "instructions": "customer_6987f21995150878eaff9949_gemini_instructions.txt",
+        "prompt": "customer_6987f21995150878eaff9949_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987f21d95150878eaff994b",
+      "name": "Jennifer Lee",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987f21d95150878eaff994b_raw.json",
+        "encrypted": "customer_6987f21d95150878eaff994b_encrypted.json",
+        "instructions": "customer_6987f21d95150878eaff994b_gemini_instructions.txt",
+        "prompt": "customer_6987f21d95150878eaff994b_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987f21f95150878eaff994d",
+      "name": "Michael Thompson",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987f21f95150878eaff994d_raw.json",
+        "encrypted": "customer_6987f21f95150878eaff994d_encrypted.json",
+        "instructions": "customer_6987f21f95150878eaff994d_gemini_instructions.txt",
+        "prompt": "customer_6987f21f95150878eaff994d_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987f22595150878eaff994f",
+      "name": "David Park",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987f22595150878eaff994f_raw.json",
+        "encrypted": "customer_6987f22595150878eaff994f_encrypted.json",
+        "instructions": "customer_6987f22595150878eaff994f_gemini_instructions.txt",
+        "prompt": "customer_6987f22595150878eaff994f_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987f42d95150878eaff995d",
+      "name": "Sarah Johnson",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987f42d95150878eaff995d_raw.json",
+        "encrypted": "customer_6987f42d95150878eaff995d_encrypted.json",
+        "instructions": "customer_6987f42d95150878eaff995d_gemini_instructions.txt",
+        "prompt": "customer_6987f42d95150878eaff995d_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987f43c95150878eaff995f",
+      "name": "Maria Rodriguez",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987f43c95150878eaff995f_raw.json",
+        "encrypted": "customer_6987f43c95150878eaff995f_encrypted.json",
+        "instructions": "customer_6987f43c95150878eaff995f_gemini_instructions.txt",
+        "prompt": "customer_6987f43c95150878eaff995f_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987f44095150878eaff9961",
+      "name": "Jennifer Lee",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987f44095150878eaff9961_raw.json",
+        "encrypted": "customer_6987f44095150878eaff9961_encrypted.json",
+        "instructions": "customer_6987f44095150878eaff9961_gemini_instructions.txt",
+        "prompt": "customer_6987f44095150878eaff9961_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987f44195150878eaff9963",
+      "name": "Michael Thompson",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987f44195150878eaff9963_raw.json",
+        "encrypted": "customer_6987f44195150878eaff9963_encrypted.json",
+        "instructions": "customer_6987f44195150878eaff9963_gemini_instructions.txt",
+        "prompt": "customer_6987f44195150878eaff9963_prompt.txt"
+      }
+    },
+    {
+      "customer_id": "6987f44595150878eaff9965",
+      "name": "David Park",
+      "profile_type": "To be determined by analysis",
+      "files": {
+        "raw": "customer_6987f44595150878eaff9965_raw.json",
+        "encrypted": "customer_6987f44595150878eaff9965_encrypted.json",
+        "instructions": "customer_6987f44595150878eaff9965_gemini_instructions.txt",
+        "prompt": "customer_6987f44595150878eaff9965_prompt.txt"
+      }
+    }
+  ]
+}

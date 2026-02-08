@@ -1,0 +1,63 @@
+
+# Gemini Analysis Package - Customer ID: 6987f44095150878eaff9961
+
+## 🔐 Encrypted Financial Data for Analysis
+
+This package contains encrypted banking transaction data for financial abuse detection.
+
+**Customer ID**: 6987f44095150878eaff9961
+**Customer Name**: Jennifer Lee (for reference only)
+
+### Decryption Details:
+- **Encryption Method**: AES-256-CBC
+- **Key (Base64)**: YykZdykzzC5CMmYMqtaSL/9UFgARPAGJKium3562F+M=
+
+### Encrypted Package:
+The encrypted data is in: encrypted_data/customer_6987f44095150878eaff9961_encrypted.json
+
+### Your Task:
+1. Decrypt the data using the provided AES key
+2. Analyze the transaction patterns for signs of financial abuse
+3. Provide a risk assessment (LOW / MEDIUM / HIGH)
+4. Identify specific patterns and red flags
+5. Recommend appropriate actions
+
+### Decryption Code (Python):
+```python
+import json
+import base64
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.backends import default_backend
+
+# Load encrypted package
+with open('encrypted_data/customer_6987f44095150878eaff9961_encrypted.json', 'r') as f:
+    encrypted_package = json.load(f)
+
+# Decryption key
+key = base64.b64decode("YykZdykzzC5CMmYMqtaSL/9UFgARPAGJKium3562F+M=")
+
+# Decrypt
+encrypted_data = base64.b64decode(encrypted_package['encrypted_data'])
+iv = base64.b64decode(encrypted_package['iv'])
+
+cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+decryptor = cipher.decryptor()
+padded_data = decryptor.update(encrypted_data) + decryptor.finalize()
+
+unpadder = padding.PKCS7(128).unpadder()
+plaintext = unpadder.update(padded_data) + unpadder.finalize()
+
+# Parse JSON
+data = json.loads(plaintext.decode())
+print(json.dumps(data, indent=2))
+```
+
+### Expected Analysis:
+- **Customer ID**: 6987f44095150878eaff9961
+- **Deposits**: 0
+- **Purchases**: 0
+- **Categories Active**: 0
+- **Analysis Period**: 6 months
+
+Please analyze this customer's financial patterns for signs of abuse.

@@ -1,0 +1,34 @@
+{
+  "customers": [
+    {
+      "customer_id": "6987f42d95150878eaff995d",
+      "name": "Sarah Johnson",
+      "profile": "No Abuse - Control Group",
+      "expected_risk": "LOW"
+    },
+    {
+      "customer_id": "6987f43c95150878eaff995f",
+      "name": "Maria Rodriguez",
+      "profile": "Moderate Abuse - Escalating Pattern",
+      "expected_risk": "MEDIUM-HIGH"
+    },
+    {
+      "customer_id": "6987f44095150878eaff9961",
+      "name": "Jennifer Lee",
+      "profile": "Severe Abuse - Complete Control",
+      "expected_risk": "HIGH"
+    },
+    {
+      "customer_id": "6987f44195150878eaff9963",
+      "name": "Michael Thompson",
+      "profile": "Recovery Pattern",
+      "expected_risk": "MEDIUM (improving)"
+    },
+    {
+      "customer_id": "6987f44595150878eaff9965",
+      "name": "David Park",
+      "profile": "Sudden Abuse",
+      "expected_risk": "HIGH"
+    }
+  ]
+}

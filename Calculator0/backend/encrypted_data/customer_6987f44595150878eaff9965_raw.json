@@ -1,0 +1,32 @@
+{
+  "customer_id": "6987f44595150878eaff9965",
+  "customer_name": "David Park",
+  "customer_metadata": {
+    "first_name": "David",
+    "last_name": "Park",
+    "address": {
+      "street_number": "555",
+      "street_name": "Sudden Street",
+      "city": "San Francisco",
+      "state": "CA",
+      "zip": "94106"
+    }
+  },
+  "account": {
+    "account_id": "6987f44695150878eaff9966",
+    "type": "Checking",
+    "nickname": "David's Checking Account",
+    "balance": 800,
+    "rewards": 10
+  },
+  "deposits": [],
+  "purchases": [],
+  "statistics": {
+    "total_deposits": 0,
+    "total_purchases": 0,
+    "total_deposited": 0,
+    "total_spent": 0,
+    "date_range": "6 months",
+    "categories_active": 0
+  }
+}
