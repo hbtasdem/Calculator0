@@ -12,9 +12,7 @@ type Category = {
 };
 
 export default function SafetyPlan() {
-  const [categories, setCategories] = useState<Category[]>([
-    { id: '1', name: 'Emergency Cash', location: 'Hidden at home', currentAmount: 150, goalAmount: 500 },
-  ]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [customAmountId, setCustomAmountId] = useState<string | null>(null);
@@ -114,7 +112,7 @@ export default function SafetyPlan() {
       <ScrollView 
         style={styles.container}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ paddingBottom: 40 }}
+        contentContainerStyle={{ paddingBottom: 100 }}
       >
         <ThemedView style={styles.content}>
           <ThemedText type="title" style={styles.title}>Safety Plan</ThemedText>
