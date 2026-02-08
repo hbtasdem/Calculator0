@@ -69,6 +69,3 @@ Domain Knowledge
 Data privacy: Importance of encryption and local-first storage
 UX for sensitive apps: Balancing security with accessibility
 Financial abuse patterns: How abusers use money as a control mechanism
-What's next for Calculator0
-Direct bank integration via Plaid API is possible
-ML model training on real anonymized abuse data (with survivor consent)
