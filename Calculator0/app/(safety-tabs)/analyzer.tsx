@@ -176,21 +176,21 @@ export default function Analyzer() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121212' },
+  container: { flex: 1, backgroundColor: '#242e24' },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#121212' },
   scrollContent: { padding: 20, paddingBottom: 40 },
-  title: { color: '#FFFFFF', marginBottom: 15 },
+  title: { color: '#ecfad4', marginBottom: 15 },
   inputSection: {
-    backgroundColor: '#1E1E1E',
+    backgroundColor: '#141a14',
     padding: 15,
     borderRadius: 12,
     marginBottom: 10,
     borderWidth: 1,
     borderColor: '#333',
   },
-  label: { color: '#BB86FC', fontSize: 14, marginBottom: 5, fontWeight: '600' },
+  label: { color: '#ecfad4', fontSize: 14, marginBottom: 5, fontWeight: '600' },
   input: {
-    backgroundColor: '#2A2A2A',
+    backgroundColor: '#242e24',
     color: '#FFF',
     padding: 10,
     borderRadius: 8,
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
   },
   savingsCard: { borderColor: '#018786' },
-  cardTitle: { fontSize: 20, fontWeight: '700', color: '#BB86FC', marginBottom: 8 },
-  divider: { height: 2, backgroundColor: '#BB86FC', width: '40%', marginBottom: 15 },
-  resultText: { fontSize: 15, lineHeight: 22, color: '#E0E0E0' },
+  cardTitle: { fontSize: 20, fontWeight: '700', color: '#ecfad4', marginBottom: 8 },
+  divider: { height: 2, backgroundColor: '#ecfad4', width: '40%', marginBottom: 15 },
+  resultText: { fontSize: 15, lineHeight: 22, color: '#ebf5f3' },
 });

@@ -1,7 +1,8 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView, Image } from 'react-native';
 import { useState } from 'react';
 import { router } from 'expo-router';
 import { authService } from '@/services/authService';
+import logo from '@/assets/images/logo.png';
 
 export default function LoginScreen() {
     // ---------- SIGN UP ----------
@@ -70,7 +71,11 @@ export default function LoginScreen() {
                     <View style={styles.header}>
                         <View style={styles.logoContainer}>
                             <View style={styles.logo}>
-                                <Text style={styles.logoText}>C</Text>
+                            <Image
+                                source={logo}
+                                style={styles.logoImage}
+                                resizeMode="contain"
+                            />
                             </View>
                         </View>
                         <Text style={styles.title}>Cipher</Text>
@@ -191,21 +196,21 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
     calculatorButton: {
         height: 56,
-        backgroundColor: '#1e293b',
+        backgroundColor: '#141a14',
         borderRadius: 12,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#334155',
+        borderColor: '#ecfad4',
     },
     calculatorButtonText: {
-        color: '#3b82f6',
+        color: '#ecfad4',
         fontSize: 17,
         fontWeight: '600',
     },
     container: {
         flex: 1,
-        backgroundColor: '#0f172a',
+        backgroundColor: '#242e24',
     },
     keyboardView: {
         flex: 1,
@@ -236,6 +241,11 @@ const styles = StyleSheet.create({
         shadowRadius: 16,
         elevation: 8,
     },
+    logoImage: {
+        width: 96,
+        height: 96,
+        borderRadius: 20,
+      },
     logoText: {
         fontSize: 42,
         fontWeight: '700',
@@ -268,22 +278,22 @@ const styles = StyleSheet.create({
     },
     input: {
         height: 56,
-        backgroundColor: '#1e293b',
+        backgroundColor: '#141a14',
         borderRadius: 12,
         paddingHorizontal: 16,
         fontSize: 16,
         color: '#fff',
         borderWidth: 1,
-        borderColor: '#334155',
+        borderColor: '#ecfad4',
     },
     button: {
         height: 56,
-        backgroundColor: '#3b82f6',
+        backgroundColor: '#ecfad4',
         borderRadius: 12,
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 8,
-        shadowColor: '#3b82f6',
+        shadowColor: '#ecfad4',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 8,
@@ -294,7 +304,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0,
     },
     buttonText: {
-        color: '#fff',
+        color: '#141a14',
         fontSize: 17,
         fontWeight: '600',
         letterSpacing: 0.5,
@@ -305,11 +315,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     switchText: {
-        color: '#94a3b8',
+        color: '#ecfad4',
         fontSize: 15,
     },
     switchTextBold: {
-        color: '#3b82f6',
+        color: '#ecfad4',
         fontWeight: '600',
     },
     infoSection: {
