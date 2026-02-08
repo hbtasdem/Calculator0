@@ -1,5 +1,5 @@
 # Calculator0
-Inspiration
+
 94% of domestic abuse cases involve financial abuse. Financial abuse is the control of another person through financial means. This control is one of the most insidious tactics abusers use to trap their victims. It is also one of the hardest forms of abuse to detect and one of the hardest to escape from. Some of the patterns include the victims wanting to leave but not being able to due to lack of funds. Their paychecks might be intercepted, spending might be monitored, and saving money might be impossible without raising suspicion.
 
 We started with one question: What if victims could secretly analyze their financial situation and plan their escape without their abuser ever knowing?
@@ -20,19 +20,24 @@ Sudden spending restrictions (punishment cycles)
 Category elimination (loss of autonomy over time)
 "Allowance" patterns (severe financial control)
 Provides risk assessment: LOW, MEDIUM, or HIGH
-2. Secret Savings Planner
+
+3. Secret Savings Planner
 Calculates how much money victims need to leave safely
 Considers: first month's rent, security deposits, emergency fund, moving costs
 Tracks progress toward savings goals
 All data encrypted and hidden behind biometric authentication
 Community resources embedded in the app (shelters, legal aid, hotlines)
-3. Encrypted Data Protection
+
+5. Encrypted Data Protection
 Secure storage for photos, documents, bank statements
 AES-256 encryption protects all files
 Face ID/email authentication required
 Panic button that instantly closes app and clears from recent apps
 If discovered, appears as a normal calculator
+
+
 How we built it
+
 Frontend
 React Native + Expo for cross-platform mobile development
 Expo Router for navigation
@@ -45,16 +50,6 @@ Python for mock data generation (5 distinct abuse profiles)
 AES-256-CBC encryption for sensitive data
 AI Prompt Engineering
 We crafted specific prompts for Gemini to detect:
-
-Temporal anomalies: Sudden drops after consistent periods
-Category diversity: $\text{Autonomy Score} = \frac{\text{Active Categories}}{\text{Expected Categories}} \times 100$
-Deposit regularity: $\sigma = \sqrt{\frac{\sum(x_i - \mu)^2}{n}}$ (high variance = red flag)
-Amount trends: Declining averages over time
-Challenges we ran into
-1. Capital One API Transaction Creation
-Problem: Even though, we were able to create customers & accounts on The Nessie API but it wasn't actually creating deposits and purchases despite successful POST requests.
-
-Solution: After extensive debugging, we decided to pivot to hardcoded JSON mock data. We created 5 complete customer profiles with realistic transaction patterns, then encrypted them directly. This actually gave us more control over the abuse patterns we wanted to demonstrate.
 
 Accomplishments that we're proud of
 1. Real-World Impact Potential
