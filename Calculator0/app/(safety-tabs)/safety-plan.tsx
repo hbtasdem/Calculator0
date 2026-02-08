@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 import { ScrollView, StyleSheet, TextInput, Button, Pressable, View, KeyboardAvoidingView, Platform, Alert,ActivityIndicator } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -30,6 +32,15 @@ export default function SafetyPlan() {
   // ============================================================================
   // FIREBASE DATA PERSISTENCE
   // ============================================================================
+
+  useFocusEffect(
+    useCallback(() => {
+      const user = auth.currentUser;
+      if (user) {
+        loadCategories(user.uid);
+      }
+    }, [])
+  );
 
   useEffect(() => {
     // Listen for auth state to handle the "blank screen" race condition

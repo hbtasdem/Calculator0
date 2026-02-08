@@ -3,8 +3,8 @@ import { StyleSheet, Button, ScrollView, ActivityIndicator, View, TextInput, Ale
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { auth, db } from '@/config/firebase'; // Import auth and db
-import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '@/config/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY || "";
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
@@ -12,16 +12,15 @@ const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 export default function Analyzer() {
   const [abuseAnalysis, setAbuseAnalysis] = useState('');
   const [savingsAdvice, setSavingsAdvice] = useState('');
+  const [savingsPlan, setSavingsPlan] = useState<any>(null); // Store structured plan
   const [loading, setLoading] = useState(false);
-  const [dataLoading, setDataLoading] = useState(true); // Loading state for Firestore data
+  const [dataLoading, setDataLoading] = useState(true);
+  const [generatingPlan, setGeneratingPlan] = useState(false);
   
   const [location, setLocation] = useState('');
   const [dependents, setDependents] = useState('');
-  
-  // State to hold the JSON from Firestore
   const [userFinanceData, setUserFinanceData] = useState<any>(null);
 
-  // Fetch the JSON on mount
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -60,12 +59,13 @@ export default function Analyzer() {
     setLoading(true);
     setAbuseAnalysis('');
     setSavingsAdvice('');
+    setSavingsPlan(null);
 
     try {
       const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
       const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-      // PROMPT 1: Use the actual JSON from state
+      // PROMPT 1: Abuse analysis
       const abusePrompt = `
         Analyze a transaction history for signs of financial abuse.
         Look for red flags like unusual gaps, microtransactions, or signs of an allowance.
@@ -78,31 +78,101 @@ export default function Analyzer() {
         - [Point]
       `;
 
+      // PROMPT 2: Savings advice with structured output
       const savingsPrompt = `
         Act as a financial safety expert. Create an Exit Strategy for ${location || 'a generic city'} with ${dependents || '0'} children.
-        Target 1 month of living costs. 
-        Format as:
-        For (area) and (number) children, it is recommended to save: $(total)
+        Target 1 month of living costs.
+        
+        Respond with TWO parts:
+        
+        PART 1 - Human readable summary:
+        For [area] with [number] children, it is recommended to save: $[total]
         Breakdown:
-        - Cash: $
-        - Checking: $
-        - Gift Cards/Creative: $
+        - Cash: $[amount]
+        - Checking Account: $[amount]
+        - Gift Cards: $[amount]
+        
+        PART 2 - JSON structure (put this at the END, after "JSON_START:"):
+        JSON_START:
+        {
+          "categories": [
+            {"name": "Emergency Cash", "location": "Hidden at home", "goalAmount": 500},
+            {"name": "Personal Checking Account", "location": "Bank of America", "goalAmount": 1000},
+            {"name": "Gift Cards", "location": "Walmart gift cards", "goalAmount": 300}
+          ]
+        }
       `;
 
-      // SEQUENTIAL EXECUTION
       const abuseRes = await model.generateContent(abusePrompt);
       setAbuseAnalysis(abuseRes.response.text());
 
-      await delay(2000); 
+      await delay(2000);
 
       const savingsRes = await model.generateContent(savingsPrompt);
-      setSavingsAdvice(savingsRes.response.text());
+      const fullResponse = savingsRes.response.text();
+      
+      // Split response into readable part and JSON
+      const parts = fullResponse.split('JSON_START:');
+      setSavingsAdvice(parts[0].trim());
+      
+      if (parts[1]) {
+        try {
+          const jsonStr = parts[1].trim().replace(/```json/g, '').replace(/```/g, '');
+          const parsed = JSON.parse(jsonStr);
+          setSavingsPlan(parsed);
+        } catch (e) {
+          console.error('Failed to parse JSON from Gemini:', e);
+        }
+      }
 
     } catch (error: any) {
       console.error(error);
       setAbuseAnalysis('Error: ' + error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const generatePlanToFirestore = async () => {
+    if (!savingsPlan) {
+      Alert.alert("No Plan", "Please analyze finances first to generate a savings plan.");
+      return;
+    }
+
+    setGeneratingPlan(true);
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        Alert.alert("Error", "You must be logged in");
+        return;
+      }
+
+      // Add unique IDs to each category
+      const categoriesWithIds = savingsPlan.categories.map((cat: any) => ({
+        id: Date.now().toString() + Math.random(),
+        name: cat.name,
+        location: cat.location || "",
+        currentAmount: 0,
+        goalAmount: cat.goalAmount
+      }));
+
+      // Save to Firestore
+      await setDoc(doc(db, 'users', user.uid), {
+        categories: categoriesWithIds,
+        updatedAt: new Date().toISOString()
+      }, { merge: true });
+
+      Alert.alert(
+        "Plan Generated!", 
+        "Your safety plan has been created. Go to the Safety Plan tab to view it.",
+        [{ text: "OK" }]
+      );
+
+    } catch (error) {
+      console.error('Error generating plan:', error);
+      Alert.alert('Error', 'Failed to generate plan');
+    } finally {
+      setGeneratingPlan(false);
     }
   };
 
@@ -152,7 +222,7 @@ export default function Analyzer() {
         {loading && <ActivityIndicator size="large" color="#BB86FC" style={styles.loader} />}
 
         {!userFinanceData && !loading && (
-            <ThemedText style={styles.warningText}>⚠️ No transaction data linked to account.</ThemedText>
+          <ThemedText style={styles.warningText}>⚠️ No transaction data linked to account.</ThemedText>
         )}
 
         {abuseAnalysis !== '' && (
@@ -165,9 +235,20 @@ export default function Analyzer() {
 
         {savingsAdvice !== '' && (
           <View style={[styles.card, styles.savingsCard]}>
-            <ThemedText style={styles.cardTitle}>Exit Plan</ThemedText>
+            <ThemedText style={styles.cardTitle}>Exit Plan Recommendations</ThemedText>
             <View style={[styles.divider, { backgroundColor: '#03DAC6' }]} />
             <ThemedText style={styles.resultText}>{savingsAdvice}</ThemedText>
+            
+            {savingsPlan && (
+              <View style={styles.generateButtonWrapper}>
+                <Button 
+                  title={generatingPlan ? "Generating..." : "Generate Plan"}
+                  onPress={generatePlanToFirestore}
+                  disabled={generatingPlan}
+                  color="#03DAC6"
+                />
+              </View>
+            )}
           </View>
         )}
       </ScrollView>
@@ -197,6 +278,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   buttonWrapper: { marginVertical: 15, borderRadius: 8, overflow: 'hidden' },
+  generateButtonWrapper: { marginTop: 15, borderRadius: 8, overflow: 'hidden' },
   loader: { marginVertical: 20 },
   warningText: { color: '#FFA000', textAlign: 'center', marginVertical: 10 },
   card: {
