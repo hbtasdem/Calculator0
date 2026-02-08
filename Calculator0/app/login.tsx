@@ -1,99 +1,10 @@
-// import { View, TextInput, Button, StyleSheet } from 'react-native';
-// import { ThemedText } from '@/components/themed-text';
-// import { ThemedView } from '@/components/themed-view';
-// import { router } from 'expo-router';
-
-// export default function Login() {
-//   return (
-//     <ThemedView style={styles.container}>
-//         <ThemedText type="title" style={styles.title}>Login</ThemedText>
-
-//         <TextInput
-//             style={styles.input}
-//             placeholder="Username"
-//             placeholderTextColor="#888"
-//         />
-
-//         <TextInput
-//             style={styles.input}
-//             placeholder="Password"
-//             secureTextEntry
-//             placeholderTextColor="#888"
-//         />
-
-//         <Button
-//             title="Login"
-//             onPress={() => router.push('/(safety-tabs)/safety-plan')}
-//         />
-//     </ThemedView>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     padding: 20,
-//   },
-//   title: {
-//     marginBottom: 30,
-//     textAlign: 'center',
-//   },
-//   input: {
-//     height: 50,
-//     borderWidth: 1,
-//     borderColor: '#ddd',
-//     borderRadius: 8,
-//     paddingHorizontal: 15,
-//     marginBottom: 15,
-//     fontSize: 16,
-//     backgroundColor: '#fff',
-//   },
-// });
-
-import { initializeApp, getApp, getApps } from "firebase/app";
-import {
-    initializeAuth,
-    getReactNativePersistence,
-    getAuth
-} from "firebase/auth";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const firebaseConfig = {
-    apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
-    authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID
-};
-
-// 1. Initialize Firebase App (checks if already initialized)
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-
-// 2. Initialize Auth with Persistence safely
-// We use a try/catch or a singleton check to prevent the "Auth already initialized" error
-let auth;
-
-try {
-    auth = initializeAuth(app, {
-        persistence: getReactNativePersistence(AsyncStorage),
-    });
-} catch (e) {
-    // If initializeAuth fails because it's already been called, 
-    // we just get the existing instance
-    auth = getAuth(app);
-}
-
-export { auth };
-
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useState } from 'react';
 import { router } from 'expo-router';
 import { authService } from '@/services/authService';
-import { LinearGradient } from 'expo-linear-gradient';
 
 export default function LoginScreen() {
+    // ---------- SIGN UP ----------
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [customerId, setCustomerId] = useState('');
@@ -124,6 +35,7 @@ export default function LoginScreen() {
         }
     };
 
+    // ---------- SIGN IN ----------
     const handleSignIn = async () => {
         if (!email || !password) {
             Alert.alert('Error', 'Please enter email and password');
@@ -248,14 +160,26 @@ export default function LoginScreen() {
                             </View>
                         )}
 
-                        <View style={styles.infoCard}>
-                            <View style={styles.infoIconContainer}>
-                                <Text style={styles.infoIcon}>🛡️</Text>
-                            </View>
-                            <View style={styles.infoContent}>
-                                <Text style={styles.infoTitle}>Emergency Mode</Text>
-                                <Text style={styles.infoText}>Enter PIN 0000 to show safe decoy data</Text>
-                            </View>
+                        <View style={styles.infoSection}>
+                            {isSignUp && (
+                                <View style={styles.infoCard}>
+                                    <View style={styles.infoIconContainer}>
+                                        <Text style={styles.infoIcon}>ℹ️</Text>
+                                    </View>
+                                    <View style={styles.infoContent}>
+                                        <Text style={styles.infoTitle}>Need a Customer ID?</Text>
+                                        <Text style={styles.infoText}>Run POST /api/demo/setup to create demo customers</Text>
+                                    </View>
+                                </View>
+                            )}
+
+                            <TouchableOpacity
+                                style={styles.calculatorButton}
+                                onPress={() => router.push('/(tabs)')}
+                                activeOpacity={0.8}
+                            >
+                                <Text style={styles.calculatorButtonText}>Calculator</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </ScrollView>
@@ -265,6 +189,20 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
+    calculatorButton: {
+        height: 56,
+        backgroundColor: '#1e293b',
+        borderRadius: 12,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#334155',
+    },
+    calculatorButtonText: {
+        color: '#3b82f6',
+        fontSize: 17,
+        fontWeight: '600',
+    },
     container: {
         flex: 1,
         backgroundColor: '#0f172a',
