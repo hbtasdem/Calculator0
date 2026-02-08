@@ -5,6 +5,7 @@ import { ThemedView } from '@/components/themed-view';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { auth, db } from '@/config/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+import * as DocumentPicker from 'expo-document-picker';
 
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY || "";
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
@@ -12,10 +13,11 @@ const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 export default function Analyzer() {
   const [abuseAnalysis, setAbuseAnalysis] = useState('');
   const [savingsAdvice, setSavingsAdvice] = useState('');
-  const [savingsPlan, setSavingsPlan] = useState<any>(null); // Store structured plan
+  const [savingsPlan, setSavingsPlan] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(true);
   const [generatingPlan, setGeneratingPlan] = useState(false);
+  const [uploadingCsv, setUploadingCsv] = useState(false);
   
   const [location, setLocation] = useState('');
   const [dependents, setDependents] = useState('');
@@ -37,7 +39,7 @@ export default function Analyzer() {
           const data = docSnap.data();
           if (data.transactionData) {
             setUserFinanceData(data.transactionData);
-            console.log("✅ Custom transaction data loaded");
+            console.log("✅ Transaction data loaded");
           }
         }
       } catch (error) {
@@ -50,9 +52,78 @@ export default function Analyzer() {
     fetchUserData();
   }, []);
 
+  const handleCsvUpload = async () => {
+    setUploadingCsv(true);
+    try {
+      const result = await DocumentPicker.getDocumentAsync({ 
+        type: ['text/csv', 'text/comma-separated-values', 'application/csv']
+      });
+      
+      if (result.canceled) {
+        setUploadingCsv(false);
+        return;
+      }
+
+      const response = await fetch(result.assets[0].uri);
+      const csvText = await response.text();
+      
+      // Parse CSV - assumes format: Transaction Date,Post Date,Card No.,Description,Category,Debit,Credit
+      const lines = csvText.trim().split('\n');
+      const headers = lines[0].split(',');
+      
+      const transactions: any[] = [];
+      
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',');
+        if (values.length < 6) continue; // Skip invalid lines
+        
+        const transaction = {
+          date: values[0]?.trim(),
+          description: values[3]?.trim(),
+          category: values[4]?.trim(),
+          debit: values[5]?.trim() ? parseFloat(values[5].trim()) : 0,
+          credit: values[6]?.trim() ? parseFloat(values[6].trim()) : 0,
+        };
+        
+        // Calculate amount (positive for expenses, negative for income)
+        transaction.amount = transaction.debit > 0 ? transaction.debit : -transaction.credit;
+        
+        transactions.push(transaction);
+      }
+      
+      if (transactions.length === 0) {
+        Alert.alert('Error', 'No valid transactions found in CSV');
+        setUploadingCsv(false);
+        return;
+      }
+
+      // Save to Firestore
+      const user = auth.currentUser;
+      if (!user) {
+        Alert.alert('Error', 'You must be logged in');
+        setUploadingCsv(false);
+        return;
+      }
+      
+      await setDoc(doc(db, 'users', user.uid), {
+        transactionData: transactions,
+        updatedAt: new Date().toISOString()
+      }, { merge: true });
+      
+      setUserFinanceData(transactions);
+      Alert.alert('Success', `Uploaded ${transactions.length} transactions`);
+      
+    } catch (error: any) {
+      console.error('CSV upload error:', error);
+      Alert.alert('Error', 'Failed to parse CSV: ' + error.message);
+    } finally {
+      setUploadingCsv(false);
+    }
+  };
+
   const analyzeFinances = async () => {
     if (!userFinanceData) {
-      Alert.alert("No Data", "No transaction data found for this user in Firestore.");
+      Alert.alert("No Data", "Please upload transaction data first.");
       return;
     }
 
@@ -65,49 +136,62 @@ export default function Analyzer() {
       const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
       const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-      // PROMPT 1: Abuse analysis
+      // PROMPT 1: Abuse analysis using actual transaction data
       const abusePrompt = `
-        Analyze a transaction history for signs of financial abuse.
-        Look for red flags like unusual gaps, microtransactions, or signs of an allowance.
-        Consider this REAL transaction data: ${JSON.stringify(userFinanceData)}
+        You are a financial abuse detection expert. Analyze this transaction history for signs of financial abuse or control.
         
-        List red flags, explain the suspicion, and rate risk (Low/Medium/High).
-        Format:
-        Risk Level: [Level]
-        Reasons for risk level:
-        - [Point]
+        Transaction Data:
+        ${JSON.stringify(userFinanceData, null, 2)}
+        
+        Look for red flags such as:
+        - Unusual spending patterns or restrictions
+        - Frequent small withdrawals (possible allowance system)
+        - Lack of access to certain merchants or categories
+        - Suspicious gaps in transaction history
+        - Evidence of financial monitoring or control
+        - Microtransactions that could indicate limited access
+        
+        Provide:
+        1. Risk Level (Low/Medium/High)
+        2. Specific red flags found in the data
+        3. Brief explanation of concerns
+        
+        Format your response clearly with sections.
       `;
 
       // PROMPT 2: Savings advice with structured output
       const savingsPrompt = `
-        Act as a financial safety expert. Create an Exit Strategy for ${location || 'a generic city'} with ${dependents || '0'} children.
-        Target 1 month of living costs.
+        Act as a financial safety expert. Create an Exit Strategy savings plan for someone in ${location || 'a mid-sized US city'} with ${dependents || '0'} children.
         
-        Respond with TWO parts:
+        Target: 1 month of living expenses for emergency exit.
         
-        PART 1 - Human readable summary:
-        For [area] with [number] children, it is recommended to save: $[total]
-        Breakdown:
-        - Cash: $[amount]
-        - Checking Account: $[amount]
-        - Gift Cards: $[amount]
+        Provide TWO parts in your response:
         
-        PART 2 - JSON structure (put this at the END, after "JSON_START:"):
+        PART 1 - Human-readable summary:
+        Recommend total savings amount and breakdown by category (Cash, Checking Account, Gift Cards).
+        Explain why each category is important for financial safety.
+        
+        PART 2 - Structured plan (put this at the END after "JSON_START:"):
         JSON_START:
         {
           "categories": [
             {"name": "Emergency Cash", "location": "Hidden at home", "goalAmount": 500},
-            {"name": "Personal Checking Account", "location": "Bank of America", "goalAmount": 1000},
-            {"name": "Gift Cards", "location": "Walmart gift cards", "goalAmount": 300}
+            {"name": "Personal Checking Account", "location": "Separate bank", "goalAmount": 1500},
+            {"name": "Gift Cards", "location": "Grocery/gas cards", "goalAmount": 300}
           ]
         }
+        
+        Adjust amounts based on location and dependents provided.
       `;
 
+      // Execute prompts sequentially
+      console.log('Analyzing for financial abuse...');
       const abuseRes = await model.generateContent(abusePrompt);
       setAbuseAnalysis(abuseRes.response.text());
 
       await delay(2000);
 
+      console.log('Generating savings recommendations...');
       const savingsRes = await model.generateContent(savingsPrompt);
       const fullResponse = savingsRes.response.text();
       
@@ -120,13 +204,14 @@ export default function Analyzer() {
           const jsonStr = parts[1].trim().replace(/```json/g, '').replace(/```/g, '');
           const parsed = JSON.parse(jsonStr);
           setSavingsPlan(parsed);
+          console.log('Savings plan parsed successfully');
         } catch (e) {
           console.error('Failed to parse JSON from Gemini:', e);
         }
       }
 
     } catch (error: any) {
-      console.error(error);
+      console.error('Analysis error:', error);
       setAbuseAnalysis('Error: ' + error.message);
     } finally {
       setLoading(false);
@@ -190,15 +275,39 @@ export default function Analyzer() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <ThemedText type="title" style={styles.title}>Financial Insights</ThemedText>
         
+        {/* Upload Section */}
+        <View style={styles.uploadSection}>
+          <ThemedText style={styles.sectionTitle}>Step 1: Upload Transaction Data</ThemedText>
+          
+          <View style={styles.buttonWrapper}>
+            <Button 
+              title={uploadingCsv ? "Uploading..." : "Upload CSV File"} 
+              onPress={handleCsvUpload}
+              disabled={uploadingCsv}
+              color="#03DAC6"
+            />
+          </View>
+          
+          {userFinanceData && (
+            <ThemedText style={styles.successText}>
+              ✅ {userFinanceData.length} transactions loaded
+            </ThemedText>
+          )}
+        </View>
+
+        {/* Analysis Section */}
         <View style={styles.inputSection}>
-          <ThemedText style={styles.label}>Current Location (Zip Code)</ThemedText>
+          <ThemedText style={styles.sectionTitle}>Step 2: Provide Context</ThemedText>
+          
+          <ThemedText style={styles.label}>Current Location (City or Zip)</ThemedText>
           <TextInput 
             style={styles.input} 
             value={location}
             onChangeText={setLocation}
-            placeholder="e.g. 78701"
+            placeholder="e.g. Austin, TX or 78701"
             placeholderTextColor="#666"
           />
+          
           <ThemedText style={styles.label}>Number of Dependents</ThemedText>
           <TextInput 
             style={styles.input} 
@@ -212,7 +321,7 @@ export default function Analyzer() {
 
         <View style={styles.buttonWrapper}>
           <Button 
-            title="Analyze Finances with Gemini" 
+            title="Analyze with Gemini" 
             onPress={analyzeFinances}
             disabled={loading || !userFinanceData}
             color="#2196F3"
@@ -222,12 +331,15 @@ export default function Analyzer() {
         {loading && <ActivityIndicator size="large" color="#BB86FC" style={styles.loader} />}
 
         {!userFinanceData && !loading && (
-          <ThemedText style={styles.warningText}>⚠️ No transaction data linked to account.</ThemedText>
+          <ThemedText style={styles.warningText}>
+            ⚠️ Upload transaction data to begin analysis
+          </ThemedText>
         )}
 
+        {/* Results */}
         {abuseAnalysis !== '' && (
           <View style={styles.card}>
-            <ThemedText style={styles.cardTitle}>Financial Abuse Risk</ThemedText>
+            <ThemedText style={styles.cardTitle}>🔍 Financial Abuse Risk Assessment</ThemedText>
             <View style={styles.divider} />
             <ThemedText style={styles.resultText}>{abuseAnalysis}</ThemedText>
           </View>
@@ -235,14 +347,14 @@ export default function Analyzer() {
 
         {savingsAdvice !== '' && (
           <View style={[styles.card, styles.savingsCard]}>
-            <ThemedText style={styles.cardTitle}>Exit Plan Recommendations</ThemedText>
+            <ThemedText style={styles.cardTitle}>💰 Exit Strategy Recommendations</ThemedText>
             <View style={[styles.divider, { backgroundColor: '#03DAC6' }]} />
             <ThemedText style={styles.resultText}>{savingsAdvice}</ThemedText>
             
             {savingsPlan && (
               <View style={styles.generateButtonWrapper}>
                 <Button 
-                  title={generatingPlan ? "Generating..." : "Generate Plan"}
+                  title={generatingPlan ? "Generating..." : "Generate Safety Plan"}
                   onPress={generatePlanToFirestore}
                   disabled={generatingPlan}
                   color="#03DAC6"
@@ -260,7 +372,16 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#121212' },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#121212' },
   scrollContent: { padding: 20, paddingBottom: 40 },
-  title: { color: '#FFFFFF', marginBottom: 15 },
+  title: { color: '#FFFFFF', marginBottom: 20, fontSize: 28 },
+  sectionTitle: { color: '#BB86FC', fontSize: 18, fontWeight: '700', marginBottom: 10 },
+  uploadSection: {
+    backgroundColor: '#1E1E1E',
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#333',
+  },
   inputSection: {
     backgroundColor: '#1E1E1E',
     padding: 15,
@@ -269,18 +390,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#333',
   },
-  label: { color: '#BB86FC', fontSize: 14, marginBottom: 5, fontWeight: '600' },
+  label: { color: '#BB86FC', fontSize: 14, marginBottom: 5, fontWeight: '600', marginTop: 10 },
   input: {
     backgroundColor: '#2A2A2A',
     color: '#FFF',
     padding: 10,
     borderRadius: 8,
-    marginBottom: 15,
+    marginBottom: 10,
   },
-  buttonWrapper: { marginVertical: 15, borderRadius: 8, overflow: 'hidden' },
+  buttonWrapper: { marginVertical: 8, borderRadius: 8, overflow: 'hidden' },
   generateButtonWrapper: { marginTop: 15, borderRadius: 8, overflow: 'hidden' },
   loader: { marginVertical: 20 },
-  warningText: { color: '#FFA000', textAlign: 'center', marginVertical: 10 },
+  successText: { color: '#03DAC6', textAlign: 'center', marginTop: 10, fontSize: 14 },
+  warningText: { color: '#FFA000', textAlign: 'center', marginVertical: 15, fontSize: 14 },
   card: {
     backgroundColor: '#1E1E1E',
     padding: 20,
